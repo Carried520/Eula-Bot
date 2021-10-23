@@ -31,6 +31,7 @@ namespace Discord_Bot.SlashCommands
                 Console.WriteLine(value);
                 builder.Append("\n" + value).Append(" ").Append($"0->{mission.ToString(System.Globalization.CultureInfo.InvariantCulture)}");
             }
+           
             await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder().WithContent($"```{builder}```"));
 
 

@@ -26,23 +26,21 @@ namespace Discord_Bot.Utils
                     {
                         var NextDay = DateTime.Today.AddDays(1);
                         var Tommorow = new DateTime(NextDay.Year, NextDay.Month, NextDay.Day, value.Hour, value.Minute, value.Second);
-                        var diff = (Tommorow - now).TotalMinutes;
-                        if (diff > 0)
+                        var diff = (Tommorow - now);
+                        if (diff.TotalMinutes > 0)
                         {
-                            
-                            var minutes = Convert.ToInt32(diff % 60);
-                            if (minutes == 60) minutes = 59;
-                            var hours = Convert.ToInt32(diff / 60);
+                            var minutes = Convert.ToInt32(diff.Minutes);
+                            var hours = Convert.ToInt32(diff.Hours);
                             arr.Add(key);
                             arr.Add(hours.ToString());
                             arr.Add(minutes.ToString());
                             boss.Add(arr);
                         }
-
+                        
                     }
                     else{
 
-                        var diff = (value - now);
+                        var diff = value - now;
                         if (diff.TotalMinutes > 0)
                         {
                             var minutes = Convert.ToInt32(diff.Minutes);
@@ -58,12 +56,15 @@ namespace Discord_Bot.Utils
                     
                    
                 }
+               
                 
 
 
 
             }
+
             boss.Sort((o1, o2) => int.Parse(o1[1]).CompareTo(int.Parse(o2[1])));
+            
             if (!boss.Any())
             {
                 rev = "No boss today anymore";

@@ -111,6 +111,8 @@ namespace Discord_Bot
 
                 value.RegisterCommands<Delete>(569505274667466762);
                 value.RegisterCommands<Guildmission>(569505274667466762);
+                value.RegisterCommands<Userinfo>(569505274667466762);
+                value.RegisterCommands<RedditSlash>(569505274667466762);
             }
 
             bot.Ready += OnReady;
