@@ -14,10 +14,10 @@ namespace Discord_Bot.SlashCommands
         [SlashCommand("delete", "Delete messages")]
         [SlashRequirePermissions(Permissions.ManageMessages)]
         public async Task DeleteCommand(InteractionContext ctx, [Option("amount", "Amount of messages to purge")] long amount) {
-
-            await ctx.Channel.DeleteMessagesAsync(await ctx.Channel.GetMessagesAsync(Convert.ToInt32(amount)));
             await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().WithContent($"Cleared {amount} messages"));
-
+            await ctx.Channel.DeleteMessagesAsync(await ctx.Channel.GetMessagesAsync(Convert.ToInt32(amount)));
+            
+            
 
         }
     }

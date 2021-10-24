@@ -113,6 +113,10 @@ namespace Discord_Bot
                 value.RegisterCommands<Guildmission>(569505274667466762);
                 value.RegisterCommands<Userinfo>(569505274667466762);
                 value.RegisterCommands<RedditSlash>(569505274667466762);
+                value.RegisterCommands<DmSlash>(569505274667466762);
+                value.RegisterCommands<TimerSlash>(569505274667466762);
+                value.RegisterCommands<Rp>(569505274667466762);
+                value.RegisterCommands<Pets>(569505274667466762);
             }
 
             bot.Ready += OnReady;

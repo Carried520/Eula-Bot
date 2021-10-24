@@ -51,6 +51,7 @@ namespace Discord_Bot.SlashCommands
             }
             catch (KeyNotFoundException)
             {
+                
                 await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder().WithContent("Post without image try again"));
             }
         }

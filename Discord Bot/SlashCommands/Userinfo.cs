@@ -22,6 +22,7 @@ namespace Discord_Bot.SlashCommands
             .WithFooter($"Powered by C#(not this shitty Java) ")
             .WithTimestamp(DateTime.Now.ToLocalTime())
             .WithTitle("Userinfo");
+            
             await ctx.CreateResponseAsync(DSharpPlus.InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().AddEmbed(embed.Build()));
         }
     }
