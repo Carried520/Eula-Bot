@@ -97,6 +97,9 @@ namespace Discord_Bot
                 cmd.RegisterCommands<Divorce>();
                 cmd.RegisterCommands<ShibeCommand>();
                 cmd.RegisterCommands<BossCommand>();
+                cmd.RegisterCommands<Queue>();
+                cmd.RegisterCommands<Shuffle>();
+                cmd.RegisterCommands<Stop>();
                 cmd.SetHelpFormatter<CustomHelpFormatter>();
 
                 
@@ -117,6 +120,7 @@ namespace Discord_Bot
                 value.RegisterCommands<TimerSlash>(569505274667466762);
                 value.RegisterCommands<Rp>(569505274667466762);
                 value.RegisterCommands<Pets>(569505274667466762);
+                value.RegisterCommands<Faq>(569505274667466762);
             }
 
             bot.Ready += OnReady;

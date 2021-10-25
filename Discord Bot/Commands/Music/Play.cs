@@ -15,25 +15,16 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static DSharpPlus.Entities.DiscordEmbedBuilder;
 
 namespace Discord_Bot.Commands
 {
     class Play : BaseCommandModule
     {
-        static Dictionary<ulong, List<LavalinkTrack>> music = new Dictionary<ulong, List<LavalinkTrack>>();
-
-
-        [Command("play")]
-        
-
-
-
-        public async Task PlayCommand(CommandContext ctx,  [Description("Enter a phrase to look for relevant video")] params string[] search)
+       public static Dictionary<ulong, List<LavalinkTrack>> music = PlayScheduler.music;
+       [Command("play")]
+       public async Task PlayCommand(CommandContext ctx,  [Description("Enter a phrase to look for relevant video")] params string[] search)
         {
-           
-
-            StringBuilder sb = new StringBuilder();
+           StringBuilder sb = new StringBuilder();
             for (int i = 0; i < search.Length; i++)
             {
                 sb.Append(search[i]).Append(" ");
@@ -46,8 +37,7 @@ namespace Discord_Bot.Commands
             var lava = ctx.Client.GetLavalink();
             var node = lava.ConnectedNodes.Values.First();
 
-
-            if (node.GetGuildConnection(ctx.Member.VoiceState.Guild) == null)
+           if (node.GetGuildConnection(ctx.Member.VoiceState.Guild) == null)
             {
                 var link = ctx.Client.GetLavalink();
                 if (!link.ConnectedNodes.Any())
@@ -62,26 +52,21 @@ namespace Discord_Bot.Commands
                     await ctx.RespondAsync("Not a valid voice channel.");
                     return;
                 }
-
-                await nodey.ConnectAsync(channel);
+               await nodey.ConnectAsync(channel);
             }
+           var loadResult = await node.Rest.GetTracksAsync(sb.ToString());
 
-            var loadResult = await node.Rest.GetTracksAsync(sb.ToString());
-
-            if (loadResult.LoadResultType == LavalinkLoadResultType.LoadFailed || loadResult.LoadResultType == LavalinkLoadResultType.NoMatches)
+           if (loadResult.LoadResultType == LavalinkLoadResultType.LoadFailed || loadResult.LoadResultType == LavalinkLoadResultType.NoMatches)
             {
                 await ctx.RespondAsync($"Track search failed for {search}.");
                 return;
             }
             var conn = node.GetGuildConnection(ctx.Member.VoiceState.Guild);
+           var track = loadResult.Tracks.First();
 
-            var track = loadResult.Tracks.First();
-
-            if (conn.CurrentState.CurrentTrack == null)
+           if (conn.CurrentState.CurrentTrack == null)
             {
-
-
-                var builder = new DiscordMessageBuilder()
+               var builder = new DiscordMessageBuilder()
                    .WithContent("Player")
                    .AddComponents(new DiscordComponent[]
                    {
@@ -90,17 +75,13 @@ namespace Discord_Bot.Commands
                         new DiscordButtonComponent(ButtonStyle.Secondary, "pause", "⏸️"),
                         new DiscordButtonComponent(ButtonStyle.Secondary, "skip", "⏭️"),
                         new DiscordButtonComponent(ButtonStyle.Secondary,"repeat","🔁")
-
-
-                   });
+                  });
                 await ctx.Channel.SendMessageAsync(builder);
-
-                await conn.PlayAsync(track);
+               await conn.PlayAsync(track);
             }
             else
             {
-
-                if (!music.ContainsKey(ctx.Guild.Id))
+               if (!music.ContainsKey(ctx.Guild.Id))
                 {
                     List<LavalinkTrack> queue = new List<LavalinkTrack>();
                     queue.Clear();
@@ -110,51 +91,29 @@ namespace Discord_Bot.Commands
                 else
                 {
                     var newQueue = music[ctx.Guild.Id];
-
-                    newQueue.Add(track);
+                   newQueue.Add(track);
                     music[ctx.Guild.Id] = newQueue;
+               }
+               await ctx.RespondAsync($"{track.Title} added to queue");
+           }
+       }
 
-                }
-
-                await ctx.RespondAsync($"{track.Title} added to queue");
-
-               
-            }
-
-
-            
-        }
-
-
-        [Command("play")]
+       [Command("play")]
         [Description("Play music(supports playlists)")]
         [PriorityAttribute(1)]
-
-
-
-        public async Task PlayUrl(CommandContext ctx, [Description("Provide link to video or playlist")] Uri uri)
+       public async Task PlayUrl(CommandContext ctx, [Description("Provide link to video or playlist")] Uri uri)
         {
-            var channel = ctx.Member.VoiceState.Channel.Guild;
+            
             var lava = ctx.Client.GetLavalink();
             if (!lava.ConnectedNodes.Any())
             {
                 await ctx.RespondAsync("The Lavalink connection is not established");
                 return;
             }
-
-            var node = lava.ConnectedNodes.Values.First();
-
-           
-           
-            var connect =  node.ConnectAsync(ctx.Member.VoiceState.Channel).Result;
-            
-
-            var loadResult = node.Rest.GetTracksAsync(uri).Result.Tracks.ToList();
-
-           
-            
-           
-            if(connect.CurrentState.CurrentTrack == null)
+           var node = lava.ConnectedNodes.Values.First();
+           var connect =  node.ConnectAsync(ctx.Member.VoiceState.Channel).Result;
+           var loadResult = node.Rest.GetTracksAsync(uri).Result.Tracks.ToList();
+           if(connect.CurrentState.CurrentTrack == null)
             {
                 var builder = new DiscordMessageBuilder()
                    .WithContent("Player")
@@ -165,25 +124,18 @@ namespace Discord_Bot.Commands
                         new DiscordButtonComponent(ButtonStyle.Secondary, "pause", "⏸️"),
                         new DiscordButtonComponent(ButtonStyle.Secondary, "skip", "⏭️"),
                         new DiscordButtonComponent(ButtonStyle.Secondary,"repeat","🔁")
-
-
-                   });
+                  });
                 await ctx.Channel.SendMessageAsync(builder);
-
-            }
-            
-            foreach (var track in loadResult)
+           }
+           foreach (var track in loadResult)
             {
-
-
-                if (connect.CurrentState.CurrentTrack == null)
+               if (connect.CurrentState.CurrentTrack == null)
                 {
                     await connect.PlayAsync(track);
                 } 
                 else
                 {
-
-                    if (!music.ContainsKey(ctx.Guild.Id))
+                   if (!music.ContainsKey(ctx.Guild.Id))
                     {
                         List<LavalinkTrack> queue = new List<LavalinkTrack>();
                         queue.Clear();
@@ -193,111 +145,22 @@ namespace Discord_Bot.Commands
                     else
                     {
                         var newQueue = music[ctx.Guild.Id];
-
-                        newQueue.Add(track);
+                       newQueue.Add(track);
                         music[ctx.Guild.Id] = newQueue;
-
-                    }
+                   }
                 }
             }  
         }
 
-        [Command("queue")]
-        [Description("Shows queue")]
-
-        public async Task GetQueue(CommandContext ctx)
-        {
-            try
-            {
-                var interact = ctx.Client.GetInteractivity();
-                StringBuilder sb = new StringBuilder();
-                StringBuilder GetAuthor = new StringBuilder();
-                StringBuilder GetTitle = new StringBuilder();
-                var embed = new DiscordEmbedBuilder();
-
-                var pageCount = music[ctx.Guild.Id].Count / 20 + 1;
-                if (music[ctx.Guild.Id].Count % 20 == 0) pageCount--;
-                var pages = music[ctx.Guild.Id]
-                     .Select((t, i) => new { title = t, index = i })
-                 .GroupBy(x => x.index / 20)
-                 .Select(page => new Page("",
-                 new DiscordEmbedBuilder
-                 {
-                     Title = "Playlist",
-                     Description = $"\n{string.Join("\n", page.Select(track => $"`{track.index + 1:00}` {track.title.Title}"))}",
-                     Footer = new EmbedFooter
-                     {
-                         Text = $"Page {page.Key + 1}/{pageCount}"
-                     }
-                 }
-                 )).ToArray();
-
-                var emojis = new PaginationEmojis
-                {
-                    SkipLeft = null,
-                    SkipRight = null,
-                    Stop = null,
-                    Left = DiscordEmoji.FromUnicode("◀"),
-                    Right = DiscordEmoji.FromUnicode("▶")
-                };
-                await interact.SendPaginatedMessageAsync(ctx.Channel, ctx.User, pages, emojis, PaginationBehaviour.Ignore, PaginationDeletion.KeepEmojis, TimeSpan.FromHours(1));
-
-            }
-            catch (Exception)
-            {
-                
-                await ctx.Channel.SendMessageAsync("Are u an actual baka no queue is running");
-            }
-        }
-
-        [Command("shuffle")]
-        [Description("Shuffle queue")]
-        public async Task Reorder(CommandContext ctx)
-        {
-            var newQueue = music[ctx.Guild.Id];
-            newQueue.Shuffle();
-            music[ctx.Guild.Id] = newQueue;
-            await ctx.Channel.SendMessageAsync("Shuffled queue");
-        }
-        [Command("stop")]
-        [Description("Clear the queue and stop the player")]
-        public async Task Stop(CommandContext ctx)
-        {
-           
-            var lava = ctx.Client.GetLavalink();
-            var node = lava.ConnectedNodes.Values.First();
-            var conn = node.GetGuildConnection(ctx.Member.VoiceState.Guild);
-
-            if (conn == null)
-            {
-                await ctx.RespondAsync("Lavalink is not connected.");
-                return;
-            }
-            if (conn.CurrentState.CurrentTrack == null)
-            {
-                await ctx.RespondAsync("Player isnt playing now");
-            }
-            await conn.StopAsync();
-            if (!music.ContainsKey(ctx.Guild.Id)) return;
-            var newQueue = music[ctx.Guild.Id];
-            newQueue.Clear();
-            music[ctx.Guild.Id] = newQueue;
-            await ctx.Channel.SendMessageAsync("Cleared queue and stopped the player");
-        }
-
-        [Command("repeat")]
+       [Command("repeat")]
         [Description("Repeats current track")]
         public async Task Repeat(CommandContext ctx)
         {
-
-            
-            var lava = ctx.Client.GetLavalink();
+           var lava = ctx.Client.GetLavalink();
             var node = lava.ConnectedNodes.Values.First();
             var conn = node.GetGuildConnection(ctx.Member.VoiceState.Guild);
             var track = conn.CurrentState.CurrentTrack;
-
-
-            if (!music.ContainsKey(ctx.Guild.Id))
+           if (!music.ContainsKey(ctx.Guild.Id))
             {
                 List<LavalinkTrack> queue = new List<LavalinkTrack>
                         {
@@ -312,11 +175,7 @@ namespace Discord_Bot.Commands
                 music[ctx.Guild.Id] = newQueue;
                 await ctx.RespondAsync("Repeating");
             }
-
-         
-
-
-        }
+       }
         [Command("player")]
         [Description("Brings up  music player controls")]
         public async Task Player(CommandContext ctx)
@@ -324,20 +183,17 @@ namespace Discord_Bot.Commands
             var lava = ctx.Client.GetLavalink();
             var node = lava.ConnectedNodes.Values.First();
             var conn = node.GetGuildConnection(ctx.Member.VoiceState.Guild);
-            
-                if(conn == null)
+               if(conn == null)
             {
                 await ctx.RespondAsync("What for? Bot isnt connected");
                     return;
             }
-
-                if(conn.CurrentState.CurrentTrack == null)
+               if(conn.CurrentState.CurrentTrack == null)
             {
                 await ctx.RespondAsync("What for? No track is playing");
                 return;
             }
-
-            var builder = new DiscordMessageBuilder()
+           var builder = new DiscordMessageBuilder()
                   .WithContent("Player")
                   .AddComponents(new DiscordComponent[]
                   {
@@ -346,43 +202,31 @@ namespace Discord_Bot.Commands
                         new DiscordButtonComponent(ButtonStyle.Secondary, "pause", "⏸️"),
                         new DiscordButtonComponent(ButtonStyle.Secondary, "skip", "⏭️"),
                         new DiscordButtonComponent(ButtonStyle.Secondary,"repeat","🔁")
-
-
-                  });
+                 });
             await ctx.Channel.SendMessageAsync(builder);
-
-        }
-
-
-        public static async Task PlayInGuild(LavalinkGuildConnection conn , TrackFinishEventArgs e)
+       }
+       public static async Task PlayInGuild(LavalinkGuildConnection conn , TrackFinishEventArgs e)
         {
             if (!music.ContainsKey(conn.Guild.Id)) return;
                 if (conn.CurrentState.CurrentTrack == null)
                 {
-
-                    var CurrentQueue = music[conn.Guild.Id];
-
-                    if (!CurrentQueue.Any()) return;
+                   var CurrentQueue = music[conn.Guild.Id];
+                   if (!CurrentQueue.Any()) return;
                     await conn.PlayAsync(CurrentQueue[0]);
                     CurrentQueue.RemoveAt(0);
                     music[conn.Guild.Id] = CurrentQueue;
-
-                }
+               }
         }
-
-
-        public static async Task OnClick(DiscordClient bot, ComponentInteractionCreateEventArgs e)
+       public static async Task OnClick(DiscordClient bot, ComponentInteractionCreateEventArgs e)
         {
             _ = Task.Run(async () => {
-
-                var lavalink = bot.GetLavalink();
+               var lavalink = bot.GetLavalink();
                 var nodes = lavalink.ConnectedNodes.Values.First();
                 var connected = nodes.GetGuildConnection(e.Guild);
                 switch (e.Id)
                 {
                     case "stop":
-
-                        if (connected == null)
+                       if (connected == null)
                         {
                             await e.Interaction.CreateFollowupMessageAsync(new DiscordFollowupMessageBuilder().WithContent("Im not connected"));
                             return;
@@ -397,15 +241,11 @@ namespace Discord_Bot.Commands
                         var newQueue = music[e.Guild.Id];
                         newQueue.Clear();
                         music[e.Guild.Id] = newQueue;
-
-                        await e.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage, new DiscordInteractionResponseBuilder().WithContent("Queue cleared and player stopped"));
+                       await e.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage, new DiscordInteractionResponseBuilder().WithContent("Queue cleared and player stopped"));
                         break;
-
-                    case "resume":
+                   case "resume":
                         await e.Interaction.CreateResponseAsync(InteractionResponseType.DeferredMessageUpdate);
-
-
-                        if (connected == null)
+                       if (connected == null)
                         {
                             await e.Interaction.CreateFollowupMessageAsync(new DiscordFollowupMessageBuilder().WithContent("Lavalink not connected"));
                             return;
@@ -419,8 +259,7 @@ namespace Discord_Bot.Commands
                         }
                         break;
                     case "pause":
-
-                        await e.Interaction.CreateResponseAsync(InteractionResponseType.DeferredMessageUpdate);
+                       await e.Interaction.CreateResponseAsync(InteractionResponseType.DeferredMessageUpdate);
                         if (connected == null)
                         {
                             await e.Interaction.CreateFollowupMessageAsync(new DiscordFollowupMessageBuilder().WithContent("Lavalink is not connected"));
@@ -437,11 +276,9 @@ namespace Discord_Bot.Commands
                             var responded = await e.Interaction.CreateFollowupMessageAsync(new DiscordFollowupMessageBuilder().WithContent("Paused"));
                             await Task.Delay(5000);
                             await responded.DeleteAsync();
-
-                        }
+                       }
                         break;
-
-                    case "repeat":
+                   case "repeat":
                         await e.Interaction.CreateResponseAsync(InteractionResponseType.DeferredMessageUpdate);
                         if (connected == null)
                         {
@@ -451,8 +288,7 @@ namespace Discord_Bot.Commands
                         else if (connected.CurrentState.CurrentTrack == null)
                         {
                              await e.Interaction.CreateFollowupMessageAsync(new DiscordFollowupMessageBuilder().WithContent($"No tracks loaded"));
-                            
-                        }
+                       }
                         else
                         {
                             var track = connected.CurrentState.CurrentTrack;
@@ -481,18 +317,15 @@ namespace Discord_Bot.Commands
                         await e.Interaction.CreateResponseAsync(InteractionResponseType.DeferredMessageUpdate);
                         if (connected == null)
                         {
-                           
-                            await e.Interaction.CreateFollowupMessageAsync(new DiscordFollowupMessageBuilder().WithContent("Lavalink is not connected"));
-                           
-                            return;
+                           await e.Interaction.CreateFollowupMessageAsync(new DiscordFollowupMessageBuilder().WithContent("Lavalink is not connected"));
+                           return;
                         }
                         if (connected.CurrentState.CurrentTrack == null)
                         {
                             await e.Interaction.CreateFollowupMessageAsync(new DiscordFollowupMessageBuilder().WithContent("Player isnt playing"));
                             return;
                         }
-                        
-                        await connected.StopAsync();
+                       await connected.StopAsync();
                      var response4 = await e.Interaction.CreateFollowupMessageAsync(new DiscordFollowupMessageBuilder().WithContent($"Skipping track"));
                         await Task.Delay(5000);
                         await response4.DeleteAsync();
@@ -503,11 +336,4 @@ namespace Discord_Bot.Commands
             }
         }
     }
-
-
-
-
-      
-            
-         
-    
+   
