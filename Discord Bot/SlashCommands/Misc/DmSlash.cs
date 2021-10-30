@@ -14,8 +14,8 @@ namespace Discord_Bot.SlashCommands
         {
             await ctx.CreateResponseAsync(DSharpPlus.InteractionResponseType.DeferredChannelMessageWithSource);
             var member = (DiscordMember)user;
-            await member.CreateDmChannelAsync().Result.SendMessageAsync(content);
-            await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder().WithContent("Dm sent"));
+            await member.CreateDmChannelAsync().Result.SendMessageAsync($" Message from {ctx.Member.DisplayName} {content}");
+            await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder().WithContent("Dm sent").AsEphemeral(true));
         }
     }
 }

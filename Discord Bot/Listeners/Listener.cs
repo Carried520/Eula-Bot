@@ -1,8 +1,11 @@
 ﻿using Discord_Bot.Commands;
+using Discord_Bot.Commands.Birthday;
+using Discord_Bot.Commands.BotInfo;
 using Discord_Bot.Commands.Guild;
 using Discord_Bot.Commands.Music;
 using Discord_Bot.Commands.Rp;
 using Discord_Bot.SlashCommands;
+using Discord_Bot.SlashCommands.Music;
 using Discord_Bot.Utils;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -12,8 +15,10 @@ using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using DSharpPlus.Interactivity.Extensions;
 using DSharpPlus.Lavalink;
+using DSharpPlus.Lavalink.EventArgs;
 using DSharpPlus.Net;
 using DSharpPlus.SlashCommands;
+using DSharpPlus.SlashCommands.EventArgs;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
@@ -32,14 +37,20 @@ namespace Discord_Bot
 
     {
 
-        public class Exp
+        public class BirthdayData
         {
-            
+
             public ulong Id { get; set; }
-            public int Experience { get; set; }
-            public int Level { get; set; }
+            public DateTime BirthdayDate { get; set; }
+
+
+
         }
+
+
         private static Timer _timer;
+        private static Timer _BossTimer;
+        private static Timer _BirthdayChecker;
 
 
         public IReadOnlyDictionary<int, CommandsNextExtension> Commands;
@@ -62,8 +73,10 @@ namespace Discord_Bot
 
             var Commands = await bot.UseCommandsNextAsync(new CommandsNextConfiguration()
             {
-                StringPrefixes = new[] { Config.get("prefix") },
-                Services = services
+                StringPrefixes = new[] { Config.Get("prefix") },
+                Services = services,
+                UseDefaultCommandHandler = false
+
 
             });
 
@@ -76,7 +89,7 @@ namespace Discord_Bot
                 cmd.RegisterCommands<Fox>();
                 cmd.RegisterCommands<Clear>();
                 cmd.RegisterCommands<CoinFlip>();
-                cmd.RegisterCommands<Ping>();
+                cmd.RegisterCommands<Spotify>();
                 cmd.RegisterCommands<UserInfo>();
                 cmd.RegisterCommands<Question>();
                 cmd.RegisterCommands<Reaction>();
@@ -89,17 +102,26 @@ namespace Discord_Bot
                 cmd.RegisterCommands<Track>();
                 cmd.RegisterCommands<Skip>();
                 cmd.RegisterCommands<RedditCmd>();
-                cmd.RegisterCommands<ExpCommand>();
                 cmd.RegisterCommands<Dm>();
                 cmd.RegisterCommands<Clock>();
                 cmd.RegisterCommands<Ask>();
                 cmd.RegisterCommands<Marry>();
                 cmd.RegisterCommands<Divorce>();
                 cmd.RegisterCommands<ShibeCommand>();
-                cmd.RegisterCommands<BossCommand>();
                 cmd.RegisterCommands<Queue>();
                 cmd.RegisterCommands<Shuffle>();
                 cmd.RegisterCommands<Stop>();
+                cmd.RegisterCommands<GuildMission>();
+                cmd.RegisterCommands<GuildList>();
+                cmd.RegisterCommands<ResetAll>();
+                cmd.RegisterCommands<ResetOne>();
+                cmd.RegisterCommands<BossRole>();
+                cmd.RegisterCommands<FollowChannel>();
+                cmd.RegisterCommands<Birthday>();
+                cmd.RegisterCommands<BotInviteLink>();
+                cmd.RegisterCommands<DevServerLink>();
+                cmd.RegisterCommands<FeedbackCommand>();
+
                 cmd.SetHelpFormatter<CustomHelpFormatter>();
 
                 
@@ -109,18 +131,26 @@ namespace Discord_Bot
             }
 
             var slash = await bot.UseSlashCommandsAsync();
-            foreach (var value in slash.Values)
+            foreach (var SlashCommand in slash.Values)
             {
 
-                value.RegisterCommands<Delete>(569505274667466762);
-                value.RegisterCommands<Guildmission>(569505274667466762);
-                value.RegisterCommands<Userinfo>(569505274667466762);
-                value.RegisterCommands<RedditSlash>(569505274667466762);
-                value.RegisterCommands<DmSlash>(569505274667466762);
-                value.RegisterCommands<TimerSlash>(569505274667466762);
-                value.RegisterCommands<Rp>(569505274667466762);
-                value.RegisterCommands<Pets>(569505274667466762);
-                value.RegisterCommands<Faq>(569505274667466762);
+                SlashCommand.RegisterCommands<Delete>();
+                SlashCommand.RegisterCommands<Userinfo>();
+                SlashCommand.RegisterCommands<RedditSlash>();
+                SlashCommand.RegisterCommands<DmSlash>();
+                SlashCommand.RegisterCommands<TimerSlash>();
+                SlashCommand.RegisterCommands<Rp>();
+                SlashCommand.RegisterCommands<Pets>();
+                SlashCommand.RegisterCommands<Faq>();
+                SlashCommand.RegisterCommands<JoinSlash>();
+                SlashCommand.RegisterCommands<SlashPlay>();
+                SlashCommand.RegisterCommands<SlashPlayer>();
+                SlashCommand.RegisterCommands<SlashSpotify>();
+                
+                SlashCommand.SlashCommandErrored += OnSlashErrored;
+                
+                
+
             }
 
             bot.Ready += OnReady;
@@ -137,83 +167,121 @@ namespace Discord_Bot
 
         }
 
-        public static async Task OnGuildDownload(DiscordClient bot, GuildDownloadCompletedEventArgs e)
+        public static Task OnSlashErrored (SlashCommandsExtension extension , SlashCommandErrorEventArgs e)
         {
-
-            
-            var count = 0;
-            var channels = 0;
-            foreach (var guild in e.Guilds)
+            _ = Task.Run(async () =>
             {
-             
-                count += guild.Value.MemberCount;
-                channels += guild.Value.Channels.Count;
-            }
-            
+                Random random = new Random();
+                var members = e.Context.Guild.Members;
+                int index = random.Next(members.Count);
+                var key = members.Values.ElementAt(index);
 
-            List<string> _list = new List<string> {bot.ShardCount + " Shards!",e.Guilds.Count + " Guilds",
+                await e.Context.Channel.SendMessageAsync($" Slash Command {e.Context.CommandName} failed to execute ");
+            
+            });
+                return Task.CompletedTask;
+        }
+
+
+
+        public static Task OnGuildDownload(DiscordClient bot, GuildDownloadCompletedEventArgs e)
+        {
+            _ = Task.Run(async () =>
+            {
+
+
+                var count = 0;
+                var channels = 0;
+                foreach (var guild in e.Guilds)
+                {
+
+                    count += guild.Value.MemberCount;
+                    channels += guild.Value.Channels.Count;
+                }
+
+
+                List<string> _list = new List<string> {bot.ShardCount + " Shards!",e.Guilds.Count + " Guilds",
                 count + " Users",channels + " Channels", "Some C# game", "Json is son of J", "Is Austria even a country", "Very first C# bot to use music player with interactable buttons!",
                 "Watching you through my hidden camera","C#>Java"};
-            int _statusIndex = 0;
+                int _statusIndex = 0;
 
-            _timer = new Timer(async _ =>
-            {
-                await bot.UpdateStatusAsync(new DiscordActivity(_list.ElementAtOrDefault(_statusIndex), ActivityType.Playing));
-                _statusIndex = _statusIndex + 1 == _list.Count ? 0 : _statusIndex + 1;
-            },
-             null,
-             TimeSpan.FromSeconds(1),
-             TimeSpan.FromMinutes(1));
-            var channel = e.Guilds[569505274667466762].GetChannel(699396897994965061);
-
-            
-            var bossOne = new BossSchedule().Bosses();
-            var embed = new DiscordEmbedBuilder();
-             embed.WithDescription($"{bossOne[0]}");
-            var message = await bot.SendMessageAsync(channel,embed.Build());
-            _timer = new Timer(async _ =>
-            {
-                var boss = new BossSchedule().Bosses();
-                    var embeded = new DiscordEmbedBuilder();
-               embeded.WithDescription($"{boss[0]}");
-                await message.ModifyAsync(new DiscordMessageBuilder().WithEmbed(embeded.Build()));
-
-                _ = Task.Run(async () =>
+                _timer = new Timer(async _ =>
                 {
-                    if(Convert.ToInt32(boss[1]) == 10)
-                    {
-                        var msg = await bot.SendMessageAsync(channel,"Boss spawns in 10 minutes!");
-                        await Task.Delay(TimeSpan.FromMinutes(10));
-                        await msg.DeleteAsync();
-                    }
-                    else if(Convert.ToInt32(boss[1]) == 5)
-                    {
-                        var msg = await bot.SendMessageAsync(channel, "Boss spawns in 5 minutes!");
-                        await Task.Delay(TimeSpan.FromMinutes(5));
-                        await msg.DeleteAsync();
-                    }
-                    else if(Convert.ToInt32(boss[1]) == 2)
-                    {
-                        var msg = await bot.SendMessageAsync(channel, "Boss spawns in 1 minute.Hurry!");
-                        await Task.Delay(TimeSpan.FromMinutes(1));
-                        await msg.DeleteAsync();
-                    }
-                });
+
+
+
+
+                    await bot.UpdateStatusAsync(new DiscordActivity(_list.ElementAtOrDefault(_statusIndex), ActivityType.Playing));
+                    _statusIndex = _statusIndex + 1 == _list.Count ? 0 : _statusIndex + 1;
+
+
+
+
 
 
                 },
-             null,
-             TimeSpan.FromMinutes(1),
-             TimeSpan.FromMinutes(1));
+                 null,
+                 TimeSpan.FromSeconds(1),
+                 TimeSpan.FromMinutes(1));
 
-
-           
-
+                
 
 
 
 
-                await Task.CompletedTask;
+                var channel = e.Guilds[875583069678092329].GetChannel(875585800870457355);
+                var role = e.Guilds[875583069678092329].GetRole(876317727801880647);
+
+                
+                var bossOne = new BossSchedule().Bosses();
+                var embed = new DiscordEmbedBuilder();
+                embed.WithDescription($"{bossOne[0]}");
+                var message = await bot.SendMessageAsync(channel, embed.Build());
+                _BossTimer = new Timer(async _ =>
+                {
+
+                    var boss = new BossSchedule().Bosses();
+                    var embeded = new DiscordEmbedBuilder();
+                    embeded.WithDescription($"{boss[0]}");
+                    await message.ModifyAsync(new DiscordMessageBuilder().WithEmbed(embeded.Build()));
+                    _ = Task.Run(async () =>
+                    {
+                        _ = Task.Run(async () =>
+                        {
+                            if (boss.Any())
+                            {
+                                if (Convert.ToInt32(boss[1]) == 10)
+                                {
+                                    var msg = await bot.SendMessageAsync(channel, $" {role.Mention} Boss spawns in 10 minutes!");
+                                    await Task.Delay(TimeSpan.FromMinutes(10));
+                                    await msg.DeleteAsync();
+
+
+                                }
+
+
+
+
+                            }
+
+                        });
+
+
+
+                        await Task.Delay(-1);
+                    });
+
+
+                }, null,
+                 TimeSpan.FromSeconds(1),
+                 TimeSpan.FromMinutes(1));
+                
+            });
+               
+
+
+        
+            return Task.CompletedTask;
         }
 
         public static  Task OnReady(DiscordClient bot, ReadyEventArgs e)
@@ -249,17 +317,24 @@ namespace Discord_Bot
                     
                     await Task.Delay(-1);
                 });
-
+                
 
                 _ = Task.Run(async () => {
 
-                   lava.Discord.VoiceServerUpdated += OnVoiceUpdated;
+                    lava.PlayerUpdated += OnVoiceUpdated;
+                    
+                    
                     await Task.CompletedTask;
                 
                 });
+               
+
+                   
 
 
+                    
 
+               
 
             });
 
@@ -267,69 +342,52 @@ namespace Discord_Bot
             return Task.CompletedTask;
         }
 
-        public static  Task OnVoiceUpdated(DiscordClient bot, VoiceServerUpdateEventArgs e)
-        {
-            _ = Task.Run(async () =>
+            public static  Task OnVoiceUpdated(LavalinkGuildConnection guildConnection, PlayerUpdateEventArgs e)
             {
-                await Task.CompletedTask;
-            });
-            return Task.CompletedTask;
-            }
+                _ = Task.Run(async () =>
+                {
+                
+                    if (guildConnection.CurrentState.CurrentTrack == null )
+                    {
+                       
+                            await Task.Delay(TimeSpan.FromMinutes(5));
+                            if (guildConnection.CurrentState.CurrentTrack == null) await guildConnection.DisconnectAsync();
+                        
+                    }
+                        
+                });
+                return Task.CompletedTask;
+                }
 
         
         public static Task OnMessageCreated(DiscordClient bot , MessageCreateEventArgs e)
         {
-            _ = Task.Run(async () =>
-            {
-                if (e.Author.IsBot) return;
-                var id = e.Author.Id;
-                var exp = 100;
 
-                var client = new MongoClient(Config.get("uri"));
-                var database = client.GetDatabase("Csharp");
-                var collection = database.GetCollection<Exp>("Exp");
-                var filter = Builders<Exp>.Filter.Eq("_id", id);        
-                var list = collection.Find(filter).FirstOrDefaultAsync().Result;
-                
+            var cnext = bot.GetCommandsNext();
+            var msg = e.Message;
 
-                if (list == null)
-                {
-                  await  collection.InsertOneAsync(new Exp { Id = id , Experience = exp ,Level=1});
-                    await e.Channel.SendMessageAsync($"Level up {0}->{1}");
-                }
+            var cmdStart = msg.GetStringPrefixLength(Config.Get("prefix"),StringComparison.InvariantCultureIgnoreCase);
+            if (cmdStart == -1) return Task.CompletedTask;
 
-                 else
-                 {
-                    var search = list.Experience;
-                     var up = exp+search;
-                    var CurrentLevel = list.Level;
-                    var RequiredExp = 5000 * CurrentLevel ;
-                    if (up>=RequiredExp)
-                    {
-                        var updated = Builders<Exp>.Update.Set("Level", CurrentLevel + 1).Set("Experience", up - RequiredExp);
-                        
-                        collection.UpdateOne(filter, updated);
-                        
+            var prefix = msg.Content.Substring(0, cmdStart);
+            var cmdString = msg.Content.Substring(cmdStart);
 
-                        await e.Channel.SendMessageAsync($"Level up {CurrentLevel}->{CurrentLevel+1}");
-                    }
+            var command = cnext.FindCommand(cmdString, out var args);
+            if (command == null) return Task.CompletedTask;
 
-                    var update = Builders<Exp>.Update.Set("Experience",up);
-                     Console.WriteLine(search);
-                      collection.UpdateOne(filter,update);
-                   
-                     
-                   
-                 }
-
-
-                await Task.CompletedTask;
-            });
-              
-
+            var ctx = cnext.CreateContext(msg, prefix, command, args);
+            Task.Run(async () => await cnext.ExecuteCommandAsync(ctx));
 
             return Task.CompletedTask;
         }
+
+
+
+
+
+
+
+
 
 
         public static async Task OnError(CommandsNextExtension _, CommandErrorEventArgs e)
@@ -389,6 +447,8 @@ namespace Discord_Bot
 
 
         }
+
+
 
 
 

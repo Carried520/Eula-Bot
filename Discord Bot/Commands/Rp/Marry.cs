@@ -39,7 +39,7 @@ namespace Discord_Bot.Commands
                 return;
             }
 
-            var client = new MongoClient(Config.get("uri"));
+            var client = new MongoClient(Config.Get("uri"));
             var database = client.GetDatabase("Csharp");
             var collection = database.GetCollection<MarryStatus>("Marry");
             var filter = Builders<MarryStatus>.Filter.Eq("_id", id);
@@ -50,13 +50,18 @@ namespace Discord_Bot.Commands
             if(list == null && SecondList == null) {
 
                 await ctx.RespondAsync($" {member.Mention} Respond with *agree* to continue.");
-                var result = await ctx.Channel.GetNextMessageAsync(member);
-                if (result.Result.Content == "agree" && !result.TimedOut)
+                var result = await ctx.Channel.GetNextMessageAsync(m=> {
+                    return m.Content.ToLower() == "agree";
+                });
+                if (!result.TimedOut && result.Result.Author == member)
                 {
                     await ctx.Channel.SendMessageAsync($" {member.Mention} You may now kiss the bride(Respond with  *kiss*)");
-                    var kissed = await ctx.Channel.GetNextMessageAsync(member);
-                    if (kissed.Result.Content == "kiss")
+                    var kissed = await ctx.Channel.GetNextMessageAsync(m => {
+                        return m.Content.ToLower() == "kiss";
+                    });
+                    if(!kissed.TimedOut && kissed.Result.Author == member)
                     {
+
                         string webClient = new WebClient().DownloadString("https://purrbot.site/api/img/sfw/kiss/gif");
                         JsonDocument json = JsonDocument.Parse(webClient);
                         JsonElement root = json.RootElement;
@@ -65,15 +70,17 @@ namespace Discord_Bot.Commands
                             .WithDescription($"{ctx.Member.Mention} marries {member.Mention}")
                             .WithImageUrl(results.GetString());
                         await ctx.Channel.SendMessageAsync(embed.Build());
-                        var marriages = new List<MarryStatus> { 
-                        
+                        var marriages = new List<MarryStatus> {
+
                             new MarryStatus{Id = id,Partner = MemberId},
                             new MarryStatus{Id = MemberId,Partner = id}
                         };
                         await collection.InsertManyAsync(marriages);
+                    }
+                    
                         
 
-                    }
+                  
                 }
             }
             else

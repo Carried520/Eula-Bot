@@ -15,6 +15,8 @@ using System.Linq;
 using DSharpPlus.Interactivity.Extensions;
 using DSharpPlus.SlashCommands;
 using Discord_Bot.SlashCommands;
+using System.Collections;
+using Microsoft.Extensions.Configuration;
 
 namespace Discord_Bot
 {
@@ -33,9 +35,9 @@ namespace Discord_Bot
 
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
-
-            var token = Config.get("token");
-
+            var token = Config.Get("token");
+            
+            
             var Bot = new DiscordShardedClient(new DiscordConfiguration
             {
                 Token = token,

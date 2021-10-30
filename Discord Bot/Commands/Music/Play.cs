@@ -205,19 +205,39 @@ namespace Discord_Bot.Commands
                  });
             await ctx.Channel.SendMessageAsync(builder);
        }
-       public static async Task PlayInGuild(LavalinkGuildConnection conn , TrackFinishEventArgs e)
+       public static  Task PlayInGuild(LavalinkGuildConnection conn , TrackFinishEventArgs e)
         {
-            if (!music.ContainsKey(conn.Guild.Id)) return;
-                if (conn.CurrentState.CurrentTrack == null)
+
+
+            _ = Task.Run(async () => {
+                if (music.ContainsKey(conn.Guild.Id))
                 {
-                   var CurrentQueue = music[conn.Guild.Id];
-                   if (!CurrentQueue.Any()) return;
-                    await conn.PlayAsync(CurrentQueue[0]);
-                    CurrentQueue.RemoveAt(0);
-                    music[conn.Guild.Id] = CurrentQueue;
-               }
+                    if (conn.CurrentState.CurrentTrack == null)
+                    {
+                        var CurrentQueue = music[conn.Guild.Id];
+                        if (CurrentQueue.Any())
+                        {
+                            await conn.PlayAsync(CurrentQueue[0]);
+                            CurrentQueue.RemoveAt(0);
+                            music[conn.Guild.Id] = CurrentQueue;
+                        }
+
+
+
+                    }
+
+                }
+            });
+            return Task.CompletedTask;
+               
+                
+                
         }
-       public static async Task OnClick(DiscordClient bot, ComponentInteractionCreateEventArgs e)
+
+
+
+
+        public static async Task OnClick(DiscordClient bot, ComponentInteractionCreateEventArgs e)
         {
             _ = Task.Run(async () => {
                var lavalink = bot.GetLavalink();

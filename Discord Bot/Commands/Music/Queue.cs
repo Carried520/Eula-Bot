@@ -56,6 +56,8 @@ namespace Discord_Bot.Commands.Music
                     Left = DiscordEmoji.FromUnicode("◀"),
                     Right = DiscordEmoji.FromUnicode("▶")
                 };
+
+                
                 await interact.SendPaginatedMessageAsync(ctx.Channel, ctx.User, pages, emojis, PaginationBehaviour.Ignore, PaginationDeletion.KeepEmojis, TimeSpan.FromHours(1));
 
             }

@@ -38,14 +38,22 @@ namespace Discord_Bot.Utils
 
         public override BaseHelpFormatter WithCommand(Command command)
         {
-            var sb = new StringBuilder()
-                .Append("You can use one of following options:").Append(" ");
+            var sb = new StringBuilder();
+            sb.Append("You can use one of following options:").Append(" ").Append("\n");
+
+
+
             var result = command.Overloads;
-            var select = result.SelectMany(i => i.Arguments);
-           foreach(var arg in select)
+            
+           for(int i =0;i<result.Count;i++)
             {
+                 sb.Append($"{i+1} option:");
+                foreach (var overload in result[i].Arguments)
+                {
+                    sb.Append(" ").Append($"{overload.Name}").Append(" ").Append($"<{ overload.Description}>").Append(" ");
+                }
                 
-                sb.Append($"\n{arg.Name}").Append(" ").Append($"<{ arg.Description}>");
+                
             }
 
 

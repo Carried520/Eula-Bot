@@ -1,7 +1,14 @@
 {
   "profiles": {
     "Discord Bot": {
-      "commandName": "Project"
+      "commandName": "Project",
+      "environmentVariables": {
+        "TOKEN": "NzEzMTI3NTg2OTc2MzY2NjA0.Xsbl0g.S7pE64ufWxYhIaB1HhuH7fXF8pk",
+        "reddit_secret": "Vb9IeSVcmAg1_OkZtYgQjGBtWXYOlXw",
+        "reddit_client": "nOCDqCpEW_ELzJXnEuiEZQ",
+        "PREFIX": "e!",
+        "URI": "mongodb+srv://CarriedValk:V5KzcoWGTWtCGfRw@cluster0.ryd3y.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
+      }
     }
   }
 }

@@ -19,7 +19,9 @@ namespace Discord_Bot.Commands.Music
             var lava = ctx.Client.GetLavalink();
             var node = lava.ConnectedNodes.Values.First();
             var conn = node.GetGuildConnection(ctx.Member.VoiceState.Guild);
-
+            
+            
+            
             if (conn == null)
             {
                 await ctx.RespondAsync("Lavalink is not connected.");

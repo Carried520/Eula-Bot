@@ -30,9 +30,9 @@ namespace Discord_Bot.SlashCommands
                 time = TimeSpan.FromMinutes(value);
             } 
             await Task.Delay(time);
-            await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder().WithContent($"{ctx.Member.Mention} {value} {units} have passed"));
+            await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder().WithContent($"{ctx.Member.Mention} {value} {units} have passed").AsEphemeral(true));
            
-
+            
 
 
         }

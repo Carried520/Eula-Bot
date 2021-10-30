@@ -17,9 +17,11 @@ namespace Discord_Bot.Commands
         {
             
             string outcome = Rng.Next(0, 1) == 1 ? "heads" : "tails";
+           
 
             if (input.ToLower() == outcome) await ctx.RespondAsync($"You rolled {outcome} and won");
             else await ctx.RespondAsync($"You rolled {outcome} and lost");
+
 
 
         }

@@ -1,5 +1,6 @@
 ﻿using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
+using DSharpPlus.Entities;
 using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
@@ -23,7 +24,7 @@ namespace Discord_Bot.Commands.Rp
         public async Task DivorceCommand(CommandContext ctx)
         {
             var id = ctx.Member.Id;
-            var client = new MongoClient(Config.get("uri"));
+            var client = new MongoClient(Config.Get("uri"));
             var database = client.GetDatabase("Csharp");
             var collection = database.GetCollection<DivorceStatus>("Marry");
             var filter = Builders<DivorceStatus>.Filter.Eq("_id", id);
@@ -41,6 +42,8 @@ namespace Discord_Bot.Commands.Rp
                 var FindPartner = collection.Find(PartnerFilter).FirstOrDefault();
                 await collection.DeleteOneAsync(filter);
                 await collection.DeleteOneAsync(PartnerFilter);
+                var user =  await ctx.Guild.GetMemberAsync(PartnerId);
+                await ctx.RespondAsync($" {ctx.Member.Mention} Divorces {user.Mention}");
             }
         }
     }
