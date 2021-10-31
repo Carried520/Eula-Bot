@@ -1,4 +1,5 @@
-﻿using DSharpPlus.CommandsNext;
+﻿using Discord_Bot.Attributes;
+using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.VoiceNext;
@@ -13,6 +14,7 @@ namespace Discord_Bot.Commands
     {
         [Command("mute")]
         [Description("mute members")]
+        [Category("music")]
         [RequireUserPermissions(DSharpPlus.Permissions.MuteMembers)]
 
         public  async Task MuteCommand(CommandContext ctx,DiscordMember member)

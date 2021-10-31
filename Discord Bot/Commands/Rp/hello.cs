@@ -1,4 +1,5 @@
-﻿using DSharpPlus.CommandsNext;
+﻿using Discord_Bot.Attributes;
+using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using System.Threading.Tasks;
@@ -9,7 +10,8 @@ namespace Discord_Bot
     {
         [Command("hello")]
         [Description("says hello")]
-        
+        [Category("rp")]
+
         public async Task Hello(CommandContext ctx, [Description("Mention a member to say hello to them")]DiscordMember member  )
         {
             

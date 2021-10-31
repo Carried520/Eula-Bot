@@ -1,4 +1,5 @@
-﻿using DSharpPlus.CommandsNext;
+﻿using Discord_Bot.Attributes;
+using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity.Extensions;
@@ -13,6 +14,7 @@ namespace Discord_Bot.Commands
     {
         [Command("askaquestion")]
         [Description("ask your question")]
+        [Category("rp")]
         public async Task AskCommand(CommandContext ctx,[RemainingText] string content)
         {
           var interact =  ctx.Client.GetInteractivity();

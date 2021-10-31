@@ -1,4 +1,5 @@
-﻿using DSharpPlus.CommandsNext;
+﻿using Discord_Bot.Attributes;
+using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using System;
@@ -14,6 +15,7 @@ namespace Discord_Bot.Commands
     {
         [Command("shibe")]
         [Description("random shibe")]
+        [Category("misc")]
         public async Task Shibe(CommandContext ctx)
         {
             string url = "http://shibe.online/api/shibes?count=1&urls=true&httpsUrls=true";

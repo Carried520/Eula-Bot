@@ -1,4 +1,5 @@
-﻿using Discord_Bot.Utils;
+﻿using Discord_Bot.Attributes;
+using Discord_Bot.Utils;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using Reddit;
@@ -19,6 +20,7 @@ namespace Discord_Bot.Commands
     {
         [Command("reddit")]
         [Description("Reddit Command")]
+        [Category("misc")]
         public async Task RedditCommand(CommandContext ctx, string subReddit)
         {
 

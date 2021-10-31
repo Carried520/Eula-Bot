@@ -1,4 +1,5 @@
-﻿using DSharpPlus.CommandsNext;
+﻿using Discord_Bot.Attributes;
+using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using System;
 using System.Collections.Generic;
@@ -13,6 +14,7 @@ namespace Discord_Bot.Commands
 
         [Command("flip")]
         [Description("Flips a coin")]
+        [Category("rp")]
         public async Task Coin(CommandContext ctx, [Description("Heads or Tails")]string input)
         {
             

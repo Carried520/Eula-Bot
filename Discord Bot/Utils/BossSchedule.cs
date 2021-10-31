@@ -14,7 +14,7 @@ namespace Discord_Bot.Utils
             var finalArray = new List<string>();
             var boss = new List<List<string>>();
 
-            Dictionary<String, DateTime[]> BossTimer = new BossTimer().getBoss();
+            Dictionary<string, DateTime[]> BossTimer = new BossTimer().getBoss();
             var now = DateTime.Now;
             foreach(var key in BossTimer.Keys)
             {

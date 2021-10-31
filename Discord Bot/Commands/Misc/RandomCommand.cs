@@ -1,4 +1,5 @@
-﻿using DSharpPlus.CommandsNext;
+﻿using Discord_Bot.Attributes;
+using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using System;
 using System.Collections.Generic;
@@ -16,7 +17,8 @@ namespace Discord_Bot
 
         [Command("random")]
         [Description("Generate Random number")]
-       
+        [Category("misc")]
+
 
 
         public async Task Rand(CommandContext ctx, [Description("Min number")] int min, [Description("Max number")] int max)

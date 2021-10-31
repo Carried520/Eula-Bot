@@ -1,4 +1,5 @@
-﻿using DSharpPlus.CommandsNext;
+﻿using Discord_Bot.Attributes;
+using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Lavalink;
 using DSharpPlus.VoiceNext;
@@ -14,6 +15,7 @@ namespace Discord_Bot.Commands
     {
         [Command("resume")]
         [Description("resume player")]
+        [Category("music")]
         public async Task ResumeCommand(CommandContext ctx)
         {
 

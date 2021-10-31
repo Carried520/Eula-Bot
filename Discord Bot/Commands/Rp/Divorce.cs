@@ -1,4 +1,5 @@
-﻿using DSharpPlus.CommandsNext;
+﻿using Discord_Bot.Attributes;
+using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using MongoDB.Driver;
@@ -21,6 +22,7 @@ namespace Discord_Bot.Commands.Rp
 
         [Command("divorce")]
         [Description("divorce this bish")]
+        [Category("rp")]
         public async Task DivorceCommand(CommandContext ctx)
         {
             var id = ctx.Member.Id;

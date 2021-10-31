@@ -1,4 +1,5 @@
-﻿using DSharpPlus.CommandsNext;
+﻿using Discord_Bot.Attributes;
+using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using System;
@@ -25,6 +26,7 @@ namespace Discord_Bot.Commands
 
         [Command("fox")]
         [Description("Random fox image")]
+        [Category("misc")]
         public async Task FoxCommand(CommandContext ctx)
         {
 

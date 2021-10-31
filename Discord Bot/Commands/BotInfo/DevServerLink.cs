@@ -1,4 +1,5 @@
-﻿using DSharpPlus.CommandsNext;
+﻿using Discord_Bot.Attributes;
+using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using System;
@@ -12,6 +13,7 @@ namespace Discord_Bot.Commands.BotInfo
     {
         [Command("botserver")]
         [Description("Get Bot Dev Server invite link")]
+        [Category("botinfo")]
         public async Task ServerLink (CommandContext ctx)
         {
             var ServerInfo = ctx.Client.GetGuildAsync(878330102763646976L).Result;

@@ -1,4 +1,5 @@
-﻿using Discord_Bot.Utils;
+﻿using Discord_Bot.Attributes;
+using Discord_Bot.Utils;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
@@ -24,6 +25,7 @@ namespace Discord_Bot.Commands
     {
         [Command("question")]
         [Description("Answer a goddamn question")]
+        [Category("misc")]
         [Cooldown(1,300,CooldownBucketType.User)]
 
         public async Task QuestionCommand (CommandContext ctx)

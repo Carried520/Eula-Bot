@@ -1,4 +1,5 @@
-﻿using DSharpPlus.CommandsNext;
+﻿using Discord_Bot.Attributes;
+using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Converters;
 using DSharpPlus.CommandsNext.Entities;
 using DSharpPlus.Entities;
@@ -11,20 +12,39 @@ using System.Text;
 
 namespace Discord_Bot.Utils
 {
+    
   public  class CustomHelpFormatter : BaseHelpFormatter
     {
 
         protected DiscordEmbedBuilder _embed;
         protected InteractivityExtension _interact;
 
-
+        
         public CustomHelpFormatter(CommandContext ctx) : base(ctx)
         {
             _embed = new DiscordEmbedBuilder();
+           
          
            
                 
             
+        }
+
+        public string Categorize (IEnumerable<Command> subcommands , string categorize)
+        {
+            StringBuilder builder = new StringBuilder();
+           
+            
+            foreach (var cmd in subcommands)
+            {
+                var categoryAttribute = (CategoryAttribute)cmd.CustomAttributes.FirstOrDefault(x => x is CategoryAttribute);
+                if (cmd.Name != "help" &&  categoryAttribute.Category == categorize)
+                {
+                   
+                    builder.Append(cmd.Name).Append("\n");
+                }
+            }
+            return builder.ToString();
         }
         
 
@@ -73,20 +93,26 @@ namespace Discord_Bot.Utils
 
         public override BaseHelpFormatter WithSubcommands(IEnumerable<Command> subcommands)
         {
-            var sb = new StringBuilder();
-            var se = new StringBuilder();
-            foreach (var cmd in subcommands)
-            {
-                sb.Append($"\n{cmd.Name}").Append(" ");
-                se.Append($"\n{cmd.Description}").Append(" ");
 
 
-            }
 
-            _embed.AddField("Name", sb.ToString(), true).WithColor(DiscordColor.SpringGreen)
-                .AddField("Description", se.ToString(), true);
 
-           
+            _embed.AddField("Misc", Categorize(subcommands, "misc"), true)
+                .AddField("Botinfo", Categorize(subcommands, "botinfo"), true)
+                .AddField("guild-only", Categorize(subcommands, "guild"), true)
+                .AddField("music", Categorize(subcommands, "music"), true)
+                .AddField("rp", Categorize(subcommands, "rp"), true);
+
+
+
+
+
+
+
+
+
+
+
             return this;
         }
     }

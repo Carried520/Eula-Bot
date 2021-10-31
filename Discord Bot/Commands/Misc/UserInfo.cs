@@ -1,4 +1,5 @@
-﻿using DSharpPlus.CommandsNext;
+﻿using Discord_Bot.Attributes;
+using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using System;
@@ -30,7 +31,8 @@ namespace Discord_Bot.Commands
 
         [Command("userinfo")]
         [Description("Info about users")]
-        
+        [Category("misc")]
+
         public async Task User(CommandContext ctx,[Description("Optional argument - mention a user otherwise command will get your info")]  DiscordMember member)
         {
             
@@ -39,7 +41,8 @@ namespace Discord_Bot.Commands
         }
 
        [Command("userinfo")]
-        
+        [Category("misc")]
+
 
         public async Task SelfUser(CommandContext ctx)
         {

@@ -1,4 +1,5 @@
-﻿using DSharpPlus;
+﻿using Discord_Bot.Attributes;
+using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
@@ -20,6 +21,7 @@ namespace Discord_Bot.Commands
 
         [Command("join")]
         [Description("Joins a channel")]
+        [Category("music")]
         public async Task JoinCommand(CommandContext ctx)
         {
             var link = ctx.Client.GetLavalink();
@@ -46,6 +48,8 @@ namespace Discord_Bot.Commands
 
         [Command("leave")]
         [Description("Leave a channel")]
+        [Category("music")]
+
         public async Task LeaveCommand(CommandContext ctx)
         {
 

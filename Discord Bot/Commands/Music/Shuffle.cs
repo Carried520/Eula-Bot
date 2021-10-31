@@ -1,4 +1,5 @@
-﻿using Discord_Bot.Utils;
+﻿using Discord_Bot.Attributes;
+using Discord_Bot.Utils;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Lavalink;
@@ -14,6 +15,7 @@ namespace Discord_Bot.Commands.Music
         public static Dictionary<ulong, List<LavalinkTrack>> music = PlayScheduler.music;
         [Command("shuffle")]
         [Description("Shuffle queue")]
+        [Category("music")]
         public async Task Reorder(CommandContext ctx)
         {
             var newQueue = music[ctx.Guild.Id];

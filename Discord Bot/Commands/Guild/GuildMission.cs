@@ -1,4 +1,5 @@
-﻿using DSharpPlus.CommandsNext;
+﻿using Discord_Bot.Attributes;
+using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -23,7 +24,8 @@ namespace Discord_Bot.Commands.Guild
         }
         [Command("guildmission")]
         [Description("Guildmission tool")]
-        
+        [Category("guild")]
+
         public async Task  GuildCommand(CommandContext ctx,params string[] content)
         {
             if (!(ctx.Guild.Id == 875583069678092329)) return;

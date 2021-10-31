@@ -1,4 +1,5 @@
-﻿using DSharpPlus.CommandsNext;
+﻿using Discord_Bot.Attributes;
+using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using System.Threading.Tasks;
 
@@ -8,6 +9,7 @@ namespace Discord_Bot.Commands.BotInfo
     {
         [Command("feedback")]
         [Description("feedback about bot")]
+        [Category("botinfo")]
         public async Task Feedback (CommandContext ctx,string feedback)
         {
             await ctx.RespondAsync("Feedback sent");

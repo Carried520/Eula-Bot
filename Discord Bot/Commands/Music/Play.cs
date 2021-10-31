@@ -1,4 +1,5 @@
-﻿using Discord_Bot.Utils;
+﻿using Discord_Bot.Attributes;
+using Discord_Bot.Utils;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
@@ -22,7 +23,8 @@ namespace Discord_Bot.Commands
     {
        public static Dictionary<ulong, List<LavalinkTrack>> music = PlayScheduler.music;
        [Command("play")]
-       public async Task PlayCommand(CommandContext ctx,  [Description("Enter a phrase to look for relevant video")] params string[] search)
+        [Category("music")]
+        public async Task PlayCommand(CommandContext ctx,  [Description("Enter a phrase to look for relevant video")] params string[] search)
         {
            StringBuilder sb = new StringBuilder();
             for (int i = 0; i < search.Length; i++)
@@ -101,7 +103,8 @@ namespace Discord_Bot.Commands
        [Command("play")]
         [Description("Play music(supports playlists)")]
         [PriorityAttribute(1)]
-       public async Task PlayUrl(CommandContext ctx, [Description("Provide link to video or playlist")] Uri uri)
+        [Category("music")]
+        public async Task PlayUrl(CommandContext ctx, [Description("Provide link to video or playlist")] Uri uri)
         {
             
             var lava = ctx.Client.GetLavalink();
@@ -154,6 +157,7 @@ namespace Discord_Bot.Commands
 
        [Command("repeat")]
         [Description("Repeats current track")]
+        [Category("music")]
         public async Task Repeat(CommandContext ctx)
         {
            var lava = ctx.Client.GetLavalink();
@@ -178,6 +182,7 @@ namespace Discord_Bot.Commands
        }
         [Command("player")]
         [Description("Brings up  music player controls")]
+        [Category("music")]
         public async Task Player(CommandContext ctx)
         {
             var lava = ctx.Client.GetLavalink();

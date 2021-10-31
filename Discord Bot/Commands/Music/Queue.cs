@@ -1,4 +1,5 @@
-﻿using Discord_Bot.Utils;
+﻿using Discord_Bot.Attributes;
+using Discord_Bot.Utils;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
@@ -20,6 +21,7 @@ namespace Discord_Bot.Commands.Music
         public static Dictionary<ulong, List<LavalinkTrack>> music = PlayScheduler.music;
         [Command("queue")]
         [Description("Shows queue")]
+        [Category("music")]
 
         public async Task GetQueue(CommandContext ctx)
         {

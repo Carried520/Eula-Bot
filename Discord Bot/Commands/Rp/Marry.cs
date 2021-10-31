@@ -1,4 +1,5 @@
-﻿using DSharpPlus.CommandsNext;
+﻿using Discord_Bot.Attributes;
+using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity.Extensions;
@@ -27,6 +28,7 @@ namespace Discord_Bot.Commands
 
         [Command("marry")]
         [Description("marry someone")]
+        [Category("rp")]
 
         public async Task MarryCommand (CommandContext ctx , DiscordMember member)
         {

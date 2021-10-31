@@ -1,4 +1,5 @@
-﻿using Discord_Bot.Utils;
+﻿using Discord_Bot.Attributes;
+using Discord_Bot.Utils;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
@@ -20,6 +21,7 @@ namespace Discord_Bot.Commands
         public static Dictionary<ulong, List<LavalinkTrack>> music = PlayScheduler.music;
         [Command("spotifyplaylist")]
         [Description("Play music playlist from spotify")]
+        [Category("music")]
         public async Task SpotifyCommand(CommandContext ctx, string url)
         {
 

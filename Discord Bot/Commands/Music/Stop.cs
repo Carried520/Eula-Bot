@@ -1,4 +1,5 @@
-﻿using Discord_Bot.Utils;
+﻿using Discord_Bot.Attributes;
+using Discord_Bot.Utils;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Lavalink;
@@ -15,6 +16,7 @@ namespace Discord_Bot.Commands.Music
         public static Dictionary<ulong, List<LavalinkTrack>> music = PlayScheduler.music;
         [Command("stop")]
         [Description("Clear the queue and stop the player")]
+        [Category("music")]
         public async Task StopCommand(CommandContext ctx)
         {
 

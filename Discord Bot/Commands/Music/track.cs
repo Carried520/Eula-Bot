@@ -1,4 +1,5 @@
-﻿using DSharpPlus.CommandsNext;
+﻿using Discord_Bot.Attributes;
+using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Lavalink;
 using System;
@@ -13,6 +14,7 @@ namespace Discord_Bot.Commands.Music
     {
         [Command("track")]
         [Description("gets current track")]
+        [Category("music")]
         public async Task TrackCommand(CommandContext ctx)
         {
 

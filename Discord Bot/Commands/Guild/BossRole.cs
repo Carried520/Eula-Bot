@@ -1,4 +1,5 @@
-﻿using DSharpPlus.CommandsNext;
+﻿using Discord_Bot.Attributes;
+using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity.Extensions;
@@ -13,9 +14,10 @@ namespace Discord_Bot.Commands.Guild
     {
         [Command("bossrole")]
         [Description("Use this to get boss role")]
-        
-        
-        
+        [Category("guild")]
+
+
+
         public async Task Role(CommandContext ctx)
         {
             if (!(ctx.Guild.Id == 875583069678092329)) return;

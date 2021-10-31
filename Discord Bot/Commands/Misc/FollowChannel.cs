@@ -1,4 +1,5 @@
-﻿using DSharpPlus.CommandsNext;
+﻿using Discord_Bot.Attributes;
+using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using System;
 using System.Collections.Generic;
@@ -12,6 +13,7 @@ namespace Discord_Bot.Commands
         [Command("followchannel")]
         [Description("follow #eula-news channel")]
         [RequirePermissions(DSharpPlus.Permissions.ManageChannels)]
+        [Category("misc")]
         public async Task Follow (CommandContext ctx)
         {
             var NewsChannel = await ctx.Client.GetChannelAsync(903765976166826055L);

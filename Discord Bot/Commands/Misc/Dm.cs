@@ -1,4 +1,5 @@
-﻿using DSharpPlus.CommandsNext;
+﻿using Discord_Bot.Attributes;
+using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using System;
@@ -12,7 +13,7 @@ namespace Discord_Bot.Commands
     {
         [Command("dm")]
         [Description("dm someone")]
-
+        [Category("misc")]
         public async Task DmCommand(CommandContext ctx , DiscordMember member,[RemainingText] string  content)
         {
             

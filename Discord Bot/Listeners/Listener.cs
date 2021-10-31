@@ -42,6 +42,10 @@ namespace Discord_Bot
 
             public ulong Id { get; set; }
             public DateTime BirthdayDate { get; set; }
+            public ulong BirthdayGuild { get; set; }
+            public ulong BirthdayChannel { get; set; }
+
+
 
 
 
@@ -50,7 +54,7 @@ namespace Discord_Bot
 
         private static Timer _timer;
         private static Timer _BossTimer;
-        private static Timer _BirthdayChecker;
+        
 
 
         public IReadOnlyDictionary<int, CommandsNextExtension> Commands;
@@ -121,7 +125,6 @@ namespace Discord_Bot
                 cmd.RegisterCommands<BotInviteLink>();
                 cmd.RegisterCommands<DevServerLink>();
                 cmd.RegisterCommands<FeedbackCommand>();
-
                 cmd.SetHelpFormatter<CustomHelpFormatter>();
 
                 
@@ -146,6 +149,9 @@ namespace Discord_Bot
                 SlashCommand.RegisterCommands<SlashPlay>();
                 SlashCommand.RegisterCommands<SlashPlayer>();
                 SlashCommand.RegisterCommands<SlashSpotify>();
+                SlashCommand.RegisterCommands<Botinvite>();
+                SlashCommand.RegisterCommands<DevSever>();
+                SlashCommand.RegisterCommands<FeedbackSlash>();
                 
                 SlashCommand.SlashCommandErrored += OnSlashErrored;
                 
@@ -192,24 +198,59 @@ namespace Discord_Bot
 
                 var count = 0;
                 var channels = 0;
+                var memberList = new List<DiscordMember>();
                 foreach (var guild in e.Guilds)
                 {
 
                     count += guild.Value.MemberCount;
                     channels += guild.Value.Channels.Count;
+                   
+                    
+                    
+                    
                 }
 
+               
+                
 
+                
                 List<string> _list = new List<string> {bot.ShardCount + " Shards!",e.Guilds.Count + " Guilds",
                 count + " Users",channels + " Channels", "Some C# game", "Json is son of J", "Is Austria even a country", "Very first C# bot to use music player with interactable buttons!",
-                "Watching you through my hidden camera","C#>Java"};
+                "Watching you through my hidden camera","C#>Java","Do you hear the people sing?"};
                 int _statusIndex = 0;
 
                 _timer = new Timer(async _ =>
                 {
 
 
+                    var today = DateTime.Now;
 
+                    var client = new MongoClient(Config.Get("uri"));
+                    var database = client.GetDatabase("Csharp");
+                    var collection = database.GetCollection<BirthdayData>("Birthday");
+
+                    
+                    var ListOfAddedBirthdays = collection.Find(new BsonDocument()).ToList();
+                    foreach (var document in ListOfAddedBirthdays)
+                    {
+                        if (document.BirthdayDate.Day == today.Day && document.BirthdayDate.Month == today.Month  && today.Hour == 0 && today.Minute == 0)
+                        {
+                            var BirthdayGuild = e.Guilds[document.BirthdayGuild];
+                            var BirthdayChannel = BirthdayGuild.GetChannel(document.BirthdayChannel);
+                            var BirthdayMember = BirthdayGuild.GetMemberAsync(document.Id).Result;
+                            Console.WriteLine(BirthdayMember.Id);
+                            var embed = new DiscordEmbedBuilder()
+                            .WithImageUrl("https://www.sampleposts.com/wp-content/uploads/2020/11/happy-100th-birthday-quote-wish-grandma-grandpa-1-800x533.jpg")
+                            .WithDescription($"{BirthdayMember.Mention} has Birthday today! Happy birthday!")
+                            .WithTitle("Happy Birthday");
+                            await BirthdayChannel.SendMessageAsync(embed.Build());
+                            
+
+
+                           
+                        }
+
+                    }
 
                     await bot.UpdateStatusAsync(new DiscordActivity(_list.ElementAtOrDefault(_statusIndex), ActivityType.Playing));
                     _statusIndex = _statusIndex + 1 == _list.Count ? 0 : _statusIndex + 1;
@@ -273,7 +314,7 @@ namespace Discord_Bot
 
 
                 }, null,
-                 TimeSpan.FromSeconds(1),
+                 TimeSpan.FromMinutes(1),
                  TimeSpan.FromMinutes(1));
                 
             });
@@ -362,7 +403,7 @@ namespace Discord_Bot
         
         public static Task OnMessageCreated(DiscordClient bot , MessageCreateEventArgs e)
         {
-
+            
             var cnext = bot.GetCommandsNext();
             var msg = e.Message;
 
@@ -377,6 +418,7 @@ namespace Discord_Bot
 
             var ctx = cnext.CreateContext(msg, prefix, command, args);
             Task.Run(async () => await cnext.ExecuteCommandAsync(ctx));
+            
 
             return Task.CompletedTask;
         }
@@ -405,7 +447,15 @@ namespace Discord_Bot
                     {
 
                         var cooldown = (CooldownAttribute)failedCheck;
-                        await e.Context.RespondAsync($"Cooldown : {Math.Floor(cooldown.GetRemainingCooldown(ctx).TotalSeconds / 60)} minutes {Math.Floor(cooldown.GetRemainingCooldown(ctx).TotalSeconds % 60)} seconds ");
+                        if(cooldown.GetRemainingCooldown(ctx).TotalSeconds > 86400)
+                        {
+                            await e.Context.RespondAsync($"Cooldown : {Math.Floor(cooldown.GetRemainingCooldown(ctx).TotalSeconds / 86400 )} days");
+                        }
+                        else
+                        {
+                            await e.Context.RespondAsync($"Cooldown : {Math.Floor(cooldown.GetRemainingCooldown(ctx).TotalSeconds / 60)} minutes {Math.Floor(cooldown.GetRemainingCooldown(ctx).TotalSeconds % 60)} seconds ");
+                        }
+                        
                     }
                 }
 

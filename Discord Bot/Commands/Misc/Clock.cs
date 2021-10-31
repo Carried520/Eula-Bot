@@ -1,4 +1,5 @@
-﻿using DSharpPlus.CommandsNext;
+﻿using Discord_Bot.Attributes;
+using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using System;
 using System.Collections.Generic;
@@ -11,6 +12,7 @@ namespace Discord_Bot.Commands
     {
         [Command("timer")]
         [Description("set an alert")]
+        [Category("misc")]
         public async Task Time(CommandContext ctx,int minutes)
         {
             var timespan = TimeSpan.FromMinutes(minutes);

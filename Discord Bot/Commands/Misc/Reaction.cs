@@ -1,4 +1,5 @@
-﻿using DSharpPlus.CommandsNext;
+﻿using Discord_Bot.Attributes;
+using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity.Extensions;
@@ -13,7 +14,8 @@ namespace Discord_Bot.Commands
     {
         [Command("react")]
         [Description("react with emoji")]
-        
+        [Category("misc")]
+
         public async Task React (CommandContext ctx)
         {
             ctx.Client.UseInteractivity();
