@@ -30,7 +30,7 @@ namespace Discord_Bot.Commands.Rp
             var database = client.GetDatabase("Csharp");
             var collection = database.GetCollection<DivorceStatus>("Marry");
             var filter = Builders<DivorceStatus>.Filter.Eq("_id", id);
-            var list = collection.Find(filter).FirstOrDefaultAsync().Result;
+            var list =  await collection.Find(filter).FirstOrDefaultAsync();
            
             if(list == null)
             {

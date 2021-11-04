@@ -16,7 +16,7 @@ using DSharpPlus.Interactivity.Extensions;
 using DSharpPlus.SlashCommands;
 using Discord_Bot.SlashCommands;
 using System.Collections;
-using Microsoft.Extensions.Configuration;
+
 
 namespace Discord_Bot
 {

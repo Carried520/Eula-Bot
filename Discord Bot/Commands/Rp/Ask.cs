@@ -18,20 +18,17 @@ namespace Discord_Bot.Commands
         public async Task AskCommand(CommandContext ctx,[RemainingText] string content)
         {
           var interact =  ctx.Client.GetInteractivity();
-         
-           var message = await ctx.Channel.SendMessageAsync($"Do you agree with : ```{content}```");
-            DiscordEmoji[] emojis =  new DiscordEmoji[]{
+            DiscordEmoji[] emojis = new DiscordEmoji[]{
                  DiscordEmoji.FromName(ctx.Client,":white_check_mark:",false),
                  DiscordEmoji.FromName(ctx.Client,":x:",false)
             };
+            var message = await ctx.Channel.SendMessageAsync($"Do you agree with : ```{content}```");
+            
 
-            foreach (var emoji in emojis)
-            {
-                Console.WriteLine(emoji.Name.ToString());
-            }
+            
             var poll = await interact.DoPollAsync(message, emojis, DSharpPlus.Interactivity.Enums.PollBehaviour.DeleteEmojis, TimeSpan.FromSeconds(30));
-            var yes = poll[0].Total;
-            var no = poll[1].Total;
+            var yes = poll[0].Voted.Count;
+            var no = poll[1].Voted.Count;
             Console.WriteLine(yes);
             
 

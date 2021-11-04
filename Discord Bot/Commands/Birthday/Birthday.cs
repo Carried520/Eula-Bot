@@ -42,7 +42,7 @@ namespace Discord_Bot.Commands.Birthday
             var collection = database.GetCollection<BirthdayData>("Birthday");
             var filter = Builders<BirthdayData>.Filter.Eq("_id", id);
             
-            var ListOfAddedBirthdays = collection.Find(filter).FirstOrDefaultAsync().Result;
+            var ListOfAddedBirthdays = await collection.Find(filter).FirstOrDefaultAsync();
             if (ListOfAddedBirthdays == null)
             {
                 var BirthdayDateSet = new DateTime(year, month, day, 0, 0, 0, DateTimeKind.Utc);

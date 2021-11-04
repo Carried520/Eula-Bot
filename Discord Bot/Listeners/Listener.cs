@@ -1,7 +1,10 @@
 ﻿using Discord_Bot.Commands;
+using Discord_Bot.Commands.Activities;
+using Discord_Bot.Commands.Activities.ActivityMaker;
 using Discord_Bot.Commands.Birthday;
 using Discord_Bot.Commands.BotInfo;
 using Discord_Bot.Commands.Guild;
+using Discord_Bot.Commands.Moderation;
 using Discord_Bot.Commands.Music;
 using Discord_Bot.Commands.Rp;
 using Discord_Bot.SlashCommands;
@@ -52,9 +55,24 @@ namespace Discord_Bot
         }
 
 
+        public class GuildPrefix
+        {
+            public ulong Id { get; set; }
+            public string Prefix { get; set; }
+
+        }
+
+        public class UserPrefix
+        {
+            public ulong Id { get; set; }
+            public string Prefix { get; set; }
+
+        }
+
+
         private static Timer _timer;
         private static Timer _BossTimer;
-        
+
 
 
         public IReadOnlyDictionary<int, CommandsNextExtension> Commands;
@@ -84,7 +102,7 @@ namespace Discord_Bot
 
             });
 
-            
+
 
             foreach (var cmd in Commands.Values)
             {
@@ -93,7 +111,6 @@ namespace Discord_Bot
                 cmd.RegisterCommands<Fox>();
                 cmd.RegisterCommands<Clear>();
                 cmd.RegisterCommands<CoinFlip>();
-                cmd.RegisterCommands<Spotify>();
                 cmd.RegisterCommands<UserInfo>();
                 cmd.RegisterCommands<Question>();
                 cmd.RegisterCommands<Reaction>();
@@ -125,9 +142,18 @@ namespace Discord_Bot
                 cmd.RegisterCommands<BotInviteLink>();
                 cmd.RegisterCommands<DevServerLink>();
                 cmd.RegisterCommands<FeedbackCommand>();
+                cmd.RegisterCommands<CharacterCreation>();
+                cmd.RegisterCommands<ActivityHelp>();
+                cmd.RegisterCommands<MoveToAfk>();
+                cmd.RegisterCommands<Kick>();
+                cmd.RegisterCommands<CharInfo>();
+                cmd.RegisterCommands<CharList>();
+                cmd.RegisterCommands<Grind>();
+                cmd.RegisterCommands<Shop>();
+                cmd.RegisterCommands<PrefixCommands>();
                 cmd.SetHelpFormatter<CustomHelpFormatter>();
 
-                
+
 
                 cmd.CommandErrored += OnError;
 
@@ -153,9 +179,10 @@ namespace Discord_Bot
                 SlashCommand.RegisterCommands<DevSever>();
                 SlashCommand.RegisterCommands<FeedbackSlash>();
                 
+
                 SlashCommand.SlashCommandErrored += OnSlashErrored;
-                
-                
+
+
 
             }
 
@@ -163,9 +190,9 @@ namespace Discord_Bot
             bot.GuildDownloadCompleted += OnGuildDownload;
             bot.MessageCreated += OnMessageCreated;
             bot.ComponentInteractionCreated += Play.OnClick;
-            
 
-          
+
+
 
 
 
@@ -173,7 +200,7 @@ namespace Discord_Bot
 
         }
 
-        public static Task OnSlashErrored (SlashCommandsExtension extension , SlashCommandErrorEventArgs e)
+        public static Task OnSlashErrored(SlashCommandsExtension extension, SlashCommandErrorEventArgs e)
         {
             _ = Task.Run(async () =>
             {
@@ -183,13 +210,25 @@ namespace Discord_Bot
                 var key = members.Values.ElementAt(index);
 
                 await e.Context.Channel.SendMessageAsync($" Slash Command {e.Context.CommandName} failed to execute ");
-            
+
             });
-                return Task.CompletedTask;
+            return Task.CompletedTask;
         }
 
 
+        public static Task OnGuildMemberJoin(DiscordClient bot, GuildMemberAddEventArgs e)
+        {
+            _ = Task.Run(async () =>
+            {
+                if (e.Guild.Id == 875583069678092329L)
+                {
+                    var role = e.Guild.GetRole(875592272647946282L);
+                    await e.Member.GrantRoleAsync(role);
+                }
+            });
+            return Task.CompletedTask;
 
+        }
         public static Task OnGuildDownload(DiscordClient bot, GuildDownloadCompletedEventArgs e)
         {
             _ = Task.Run(async () =>
@@ -204,16 +243,16 @@ namespace Discord_Bot
 
                     count += guild.Value.MemberCount;
                     channels += guild.Value.Channels.Count;
-                   
-                    
-                    
-                    
+
+
+
+
                 }
 
-               
-                
 
-                
+
+
+
                 List<string> _list = new List<string> {bot.ShardCount + " Shards!",e.Guilds.Count + " Guilds",
                 count + " Users",channels + " Channels", "Some C# game", "Json is son of J", "Is Austria even a country", "Very first C# bot to use music player with interactable buttons!",
                 "Watching you through my hidden camera","C#>Java","Do you hear the people sing?"};
@@ -229,25 +268,25 @@ namespace Discord_Bot
                     var database = client.GetDatabase("Csharp");
                     var collection = database.GetCollection<BirthdayData>("Birthday");
 
-                    
+
                     var ListOfAddedBirthdays = collection.Find(new BsonDocument()).ToList();
                     foreach (var document in ListOfAddedBirthdays)
                     {
-                        if (document.BirthdayDate.Day == today.Day && document.BirthdayDate.Month == today.Month  && today.Hour == 0 && today.Minute == 0)
+                        if (document.BirthdayDate.Day == today.Day && document.BirthdayDate.Month == today.Month && today.Hour == 0 && today.Minute == 0)
                         {
                             var BirthdayGuild = e.Guilds[document.BirthdayGuild];
                             var BirthdayChannel = BirthdayGuild.GetChannel(document.BirthdayChannel);
-                            var BirthdayMember = BirthdayGuild.GetMemberAsync(document.Id).Result;
+                            var BirthdayMember =  await BirthdayGuild.GetMemberAsync(document.Id);
                             Console.WriteLine(BirthdayMember.Id);
                             var embed = new DiscordEmbedBuilder()
                             .WithImageUrl("https://www.sampleposts.com/wp-content/uploads/2020/11/happy-100th-birthday-quote-wish-grandma-grandpa-1-800x533.jpg")
                             .WithDescription($"{BirthdayMember.Mention} has Birthday today! Happy birthday!")
                             .WithTitle("Happy Birthday");
                             await BirthdayChannel.SendMessageAsync(embed.Build());
-                            
 
 
-                           
+
+
                         }
 
                     }
@@ -265,7 +304,7 @@ namespace Discord_Bot
                  TimeSpan.FromSeconds(1),
                  TimeSpan.FromMinutes(1));
 
-                
+
 
 
 
@@ -273,7 +312,7 @@ namespace Discord_Bot
                 var channel = e.Guilds[875583069678092329].GetChannel(875585800870457355);
                 var role = e.Guilds[875583069678092329].GetRole(876317727801880647);
 
-                
+
                 var bossOne = new BossSchedule().Bosses();
                 var embed = new DiscordEmbedBuilder();
                 embed.WithDescription($"{bossOne[0]}");
@@ -316,16 +355,16 @@ namespace Discord_Bot
                 }, null,
                  TimeSpan.FromMinutes(1),
                  TimeSpan.FromMinutes(1));
-                
+
             });
-               
 
 
-        
+
+
             return Task.CompletedTask;
         }
 
-        public static  Task OnReady(DiscordClient bot, ReadyEventArgs e)
+        public static Task OnReady(DiscordClient bot, ReadyEventArgs e)
         {
             _ = Task.Run(async () =>
             {
@@ -349,33 +388,34 @@ namespace Discord_Bot
                 };
                 var lavalink = bot.UseLavalink();
 
-              var lava =  await lavalink.ConnectAsync(lavalinkConfig);
+                var lava = await lavalink.ConnectAsync(lavalinkConfig);
                 _ = Task.Run(async () =>
                 {
                     lava.PlaybackFinished += Play.PlayInGuild;
-                    
-                    
-                    
+
+
+
                     await Task.Delay(-1);
                 });
-                
 
-                _ = Task.Run(async () => {
+
+                _ = Task.Run(async () =>
+                {
 
                     lava.PlayerUpdated += OnVoiceUpdated;
-                    
-                    
+
+
                     await Task.CompletedTask;
-                
+
                 });
-               
-
-                   
 
 
-                    
 
-               
+
+
+
+
+
 
             });
 
@@ -383,42 +423,102 @@ namespace Discord_Bot
             return Task.CompletedTask;
         }
 
-            public static  Task OnVoiceUpdated(LavalinkGuildConnection guildConnection, PlayerUpdateEventArgs e)
+
+        public static Task OnVoiceUpdated(LavalinkGuildConnection guildConnection, PlayerUpdateEventArgs e)
+        {
+            _ = Task.Run(async () =>
             {
-                _ = Task.Run(async () =>
+
+                if (guildConnection.CurrentState.CurrentTrack == null)
                 {
-                
-                    if (guildConnection.CurrentState.CurrentTrack == null )
-                    {
-                       
-                            await Task.Delay(TimeSpan.FromMinutes(5));
-                            if (guildConnection.CurrentState.CurrentTrack == null) await guildConnection.DisconnectAsync();
-                        
-                    }
-                        
-                });
-                return Task.CompletedTask;
+
+                    await Task.Delay(TimeSpan.FromMinutes(5));
+                    if (guildConnection.CurrentState.CurrentTrack == null) await guildConnection.DisconnectAsync();
+
+
                 }
 
-        
-        public static Task OnMessageCreated(DiscordClient bot , MessageCreateEventArgs e)
+            });
+            return Task.CompletedTask;
+        }
+
+
+        public static Task OnMessageCreated(DiscordClient bot, MessageCreateEventArgs e)
         {
-            
-            var cnext = bot.GetCommandsNext();
-            var msg = e.Message;
+            _ = Task.Run(async () =>
+            {
 
-            var cmdStart = msg.GetStringPrefixLength(Config.Get("prefix"),StringComparison.InvariantCultureIgnoreCase);
-            if (cmdStart == -1) return Task.CompletedTask;
+                var cnext = bot.GetCommandsNext();
+                var msg = e.Message;
+                var client = new MongoClient(Config.Get("uri"));
+                var database = client.GetDatabase("Csharp");
+                var collection = database.GetCollection<GuildPrefix>("guildprefixes");
+                var filter = Builders<GuildPrefix>.Filter.Eq("_id", e.Guild.Id);
+                var UserCollection = database.GetCollection<UserPrefix>("userprefixes");
+                var Userfilter = Builders<UserPrefix>.Filter.Eq("_id", e.Author.Id);
 
-            var prefix = msg.Content.Substring(0, cmdStart);
-            var cmdString = msg.Content.Substring(cmdStart);
+               
+                
+                var match = await collection.FindAsync(filter);
+                var matched = await match.FirstOrDefaultAsync();
+                var UserMatch = await UserCollection.FindAsync(Userfilter);
+                var UserMatched = await UserMatch.FirstOrDefaultAsync();
 
-            var command = cnext.FindCommand(cmdString, out var args);
-            if (command == null) return Task.CompletedTask;
+                int GuildPrefix = -1;
+                int UserPrefix = -1;
+                if (matched != null)
+                {
+                   GuildPrefix = msg.GetStringPrefixLength(matched.Prefix, StringComparison.InvariantCultureIgnoreCase);
+                   
+                }
+                if(UserMatched != null)
+                {
+                    
+                    UserPrefix = msg.GetStringPrefixLength(UserMatched.Prefix,StringComparison.InvariantCultureIgnoreCase);
+                    
+                }
 
-            var ctx = cnext.CreateContext(msg, prefix, command, args);
-            Task.Run(async () => await cnext.ExecuteCommandAsync(ctx));
-            
+
+                int cmdStart = msg.GetStringPrefixLength(Config.Get("prefix"), StringComparison.InvariantCultureIgnoreCase);
+                if (cmdStart == -1 && GuildPrefix == -1 && UserPrefix == -1) await Task.CompletedTask;
+
+                string prefix = "";
+                string cmdString = "";
+               
+                if (GuildPrefix >0 )
+                {
+                    prefix = msg.Content.Substring(0, GuildPrefix);
+
+                    cmdString = msg.Content.Substring(GuildPrefix);
+                }
+               else if(UserPrefix > 0)
+                {
+                    
+                    prefix = msg.Content.Substring(0, UserPrefix);
+                    cmdString = msg.Content.Substring(UserPrefix);
+                }
+                else
+                {
+                     prefix = msg.Content.Substring(0, cmdStart);
+                     cmdString = msg.Content.Substring(cmdStart);
+                }
+
+               
+
+
+
+                var command = cnext.FindCommand(cmdString, out var args);
+                if (command == null) await Task.CompletedTask;
+
+                var ctx = cnext.CreateContext(msg, prefix, command, args);
+               await Task.Run(async () => await cnext.ExecuteCommandAsync(ctx));
+
+
+            });
+
+
+               
+
 
             return Task.CompletedTask;
         }
@@ -437,7 +537,8 @@ namespace Discord_Bot
             Console.WriteLine(e.Exception);
             var ctx = e.Context;
 
-            if (e.Exception.GetType().ToString() == "DSharpPlus.CommandsNext.Exceptions.ChecksFailedException") {
+            if (e.Exception.GetType().ToString() == "DSharpPlus.CommandsNext.Exceptions.ChecksFailedException")
+            {
 
 
                 var failedChecks = ((ChecksFailedException)e.Exception).FailedChecks;
@@ -447,50 +548,73 @@ namespace Discord_Bot
                     {
 
                         var cooldown = (CooldownAttribute)failedCheck;
-                        if(cooldown.GetRemainingCooldown(ctx).TotalSeconds > 86400)
+                        if (cooldown.GetRemainingCooldown(ctx).TotalSeconds > 86400)
                         {
-                            await e.Context.RespondAsync($"Cooldown : {Math.Floor(cooldown.GetRemainingCooldown(ctx).TotalSeconds / 86400 )} days");
+                            await e.Context.RespondAsync($"Cooldown : {Math.Floor(cooldown.GetRemainingCooldown(ctx).TotalSeconds / 86400)} days");
                         }
                         else
                         {
                             await e.Context.RespondAsync($"Cooldown : {Math.Floor(cooldown.GetRemainingCooldown(ctx).TotalSeconds / 60)} minutes {Math.Floor(cooldown.GetRemainingCooldown(ctx).TotalSeconds % 60)} seconds ");
                         }
-                        
+
                     }
+                    else if (failedCheck is RequirePermissionsAttribute)
+                    {
+                        await e.Context.RespondAsync("You dont have permissions");
+                    }
+
                 }
 
 
             }
             if (e.Exception.GetType().ToString() == "DSharpPlus.CommandsNext.Exceptions.CommandNotFoundException")
             {
-               
-               
-                
-             await  ctx.RespondAsync("Command doesnt exist");
+
+
+
+                await ctx.RespondAsync("Command doesnt exist");
             }
 
-            if ( e.Exception.GetType().ToString() == "System.ArgumentException")
+            if (e.Exception.GetType().ToString() == "System.ArgumentException")
             {
-                Console.WriteLine(e.Exception);
-                var sb = new StringBuilder()
-                .Append("You can use one of following options:").Append(" ");
-                foreach (var over in e.Command.Overloads)
+
+
+                var sb = new StringBuilder();
+            var attr =   (CooldownAttribute) e.Command.CustomAttributes.FirstOrDefault(x => x is CooldownAttribute);
+               
+               
+
+                sb.Append("You can use one of following options:").Append(" ").Append("\n");
+
+                var result = e.Command.Overloads;
+
+                for (int i = 0; i < result.Count; i++)
                 {
-                    foreach (var arg in over.Arguments)
+                    sb.Append($"{i + 1} option:");
+                    foreach (var overload in result[i].Arguments)
                     {
-                        sb.Append($"\n{arg.Name}").Append(" ").Append($"<{ arg.Description}>");
+                        sb.Append(" ").Append($"{overload.Name}").Append(" ").Append($"<{ overload.Description}>").Append(" ");
                     }
+                    sb.Append("\n");
+
+
                 }
 
 
 
                 await ctx.RespondAsync(sb.ToString());
+                
+
+
+
+
+
+
+
+
+
+
             }
-
-
-
-
-
 
 
 
@@ -502,14 +626,9 @@ namespace Discord_Bot
 
 
 
-    }
-
-
-
-
-
 
     }
+}
 
 
 

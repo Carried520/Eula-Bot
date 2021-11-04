@@ -46,8 +46,8 @@ namespace Discord_Bot.Commands
             var collection = database.GetCollection<MarryStatus>("Marry");
             var filter = Builders<MarryStatus>.Filter.Eq("_id", id);
             var SecondFilter = Builders<MarryStatus>.Filter.Eq("_id", MemberId);
-            var list = collection.Find(filter).FirstOrDefaultAsync().Result;
-            var SecondList = collection.Find(SecondFilter).FirstOrDefaultAsync().Result;
+            var list = await collection.Find(filter).FirstOrDefaultAsync();
+            var SecondList = await collection.Find(SecondFilter).FirstOrDefaultAsync();
 
             if(list == null && SecondList == null) {
 

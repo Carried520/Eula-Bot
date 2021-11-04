@@ -44,6 +44,15 @@ namespace Discord_Bot.Utils
                     builder.Append(cmd.Name).Append("\n");
                 }
             }
+            foreach (var cmd in subcommands)
+            {
+
+                if (string.IsNullOrEmpty(builder.ToString()))
+                {
+                    builder.Append(cmd.Name).Append("\n");
+                }
+            }
+            
             return builder.ToString();
         }
         
@@ -61,8 +70,6 @@ namespace Discord_Bot.Utils
             var sb = new StringBuilder();
             sb.Append("You can use one of following options:").Append(" ").Append("\n");
 
-
-
             var result = command.Overloads;
             
            for(int i =0;i<result.Count;i++)
@@ -72,6 +79,7 @@ namespace Discord_Bot.Utils
                 {
                     sb.Append(" ").Append($"{overload.Name}").Append(" ").Append($"<{ overload.Description}>").Append(" ");
                 }
+                sb.Append("\n");
                 
                 
             }
@@ -96,22 +104,13 @@ namespace Discord_Bot.Utils
 
 
 
-
+            
             _embed.AddField("Misc", Categorize(subcommands, "misc"), true)
                 .AddField("Botinfo", Categorize(subcommands, "botinfo"), true)
                 .AddField("guild-only", Categorize(subcommands, "guild"), true)
                 .AddField("music", Categorize(subcommands, "music"), true)
-                .AddField("rp", Categorize(subcommands, "rp"), true);
-
-
-
-
-
-
-
-
-
-
+                .AddField("rp", Categorize(subcommands, "rp"), true)
+                .AddField("moderation", Categorize(subcommands, "moderation"), true);
 
             return this;
         }

@@ -12,7 +12,7 @@ namespace Discord_Bot.Commands
         [Command("clear")]
         [Description("Clear messages")]
         [RequirePermissions(DSharpPlus.Permissions.ManageMessages)]
-        [Category("misc")]
+        [Category("moderation")]
         public async Task ClearCommand (CommandContext ctx, [Description("Number of messages to be deleted")] int quantity)
         {
             if (quantity <= 100)

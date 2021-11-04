@@ -48,7 +48,7 @@ namespace Discord_Bot.Utils
 
                 ["Nouver"] = new DateTime[] { DateTime.Parse("0:15") , DateTime.Parse("5:00") , DateTime.Parse("12:00") },
                 ["Kutum"] = new DateTime[] { DateTime.Parse("2:00"), DateTime.Parse("9:00") , DateTime.Parse("19:00") },
-                ["Kzarka"] = new DateTime[] { DateTime.Parse("16:00")},
+                ["Kzarka"] = new DateTime[] { DateTime.Parse("15:00")},
                 ["Garmoth"] = new DateTime[] { DateTime.Parse("22:15") },
             };
 
@@ -85,7 +85,7 @@ namespace Discord_Bot.Utils
             {
 
                 ["Kutum and Nouver"] = new DateTime[] { DateTime.Parse("0:15") },
-                ["Kzarka"] = new DateTime[] { DateTime.Parse("2:00"), DateTime.Parse("12:00") },
+                ["Kzarka"] = new DateTime[] { DateTime.Parse("1:00"), DateTime.Parse("12:00") },
                 ["Kutum"] = new DateTime[] { DateTime.Parse("5:00") },
                 ["Nouver"] = new DateTime[] { DateTime.Parse("9:00") },
                 ["Vell"] = new DateTime[] { DateTime.Parse("16:00") },

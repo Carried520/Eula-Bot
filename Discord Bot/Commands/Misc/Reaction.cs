@@ -18,6 +18,7 @@ namespace Discord_Bot.Commands
 
         public async Task React (CommandContext ctx)
         {
+
             ctx.Client.UseInteractivity();
 
 

@@ -16,7 +16,7 @@ namespace Discord_Bot.Commands.BotInfo
         [Category("botinfo")]
         public async Task ServerLink (CommandContext ctx)
         {
-            var ServerInfo = ctx.Client.GetGuildAsync(878330102763646976L).Result;
+            var ServerInfo =  await ctx.Client.GetGuildAsync(878330102763646976L);
             var embed = new DiscordEmbedBuilder()
                 .WithDescription("Get Bot Dev Server invite")
                 .WithImageUrl(ServerInfo.IconUrl)

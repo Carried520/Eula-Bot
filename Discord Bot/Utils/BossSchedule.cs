@@ -31,6 +31,7 @@ namespace Discord_Bot.Utils
                         {
                             var minutes = Convert.ToInt32(diff.Minutes);
                             var hours = Convert.ToInt32(diff.Hours);
+                            
                             arr.Add(key);
                             arr.Add(hours.ToString());
                             arr.Add(minutes.ToString());
@@ -45,6 +46,7 @@ namespace Discord_Bot.Utils
                         {
                             var minutes = Convert.ToInt32(diff.Minutes);
                             var hours = Convert.ToInt32(diff.Hours);
+                            
                             arr.Add(key);
                             arr.Add(hours.ToString());
                             arr.Add(minutes.ToString());
