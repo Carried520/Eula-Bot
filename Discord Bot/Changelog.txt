@@ -1,0 +1,3 @@
+﻿Introduced Dependency Injection
+Introduced nsfw slash commands(Registration time 1 hr from new bot version release so be patient)
+Introduced nsfw commands

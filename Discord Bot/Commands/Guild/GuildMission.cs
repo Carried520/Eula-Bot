@@ -3,7 +3,6 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using MongoDB.Bson;
 using MongoDB.Driver;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,8 +19,9 @@ namespace Discord_Bot.Commands.Guild
             public string Family { get; set; }
             public double Points { get; set; }
             public double Tier { get; set; }
-            
+
         }
+        
         [Command("guildmission")]
         [Description("Guildmission tool")]
         [Category("guild")]

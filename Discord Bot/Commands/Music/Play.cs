@@ -1,4 +1,5 @@
 ﻿using Discord_Bot.Attributes;
+using Discord_Bot.Services;
 using Discord_Bot.Utils;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -24,6 +25,7 @@ namespace Discord_Bot.Commands
 {
     class Play : BaseCommandModule
     {
+       
        public static Dictionary<ulong, List<LavalinkTrack>> music = PlayScheduler.music;
        [Command("play")]
         [Category("music")]
@@ -267,17 +269,6 @@ namespace Discord_Bot.Commands
                 }
 
             }
-
-
-
-
-
-
-
-
-
-
-              
         }
 
        [Command("repeat")]
@@ -305,36 +296,7 @@ namespace Discord_Bot.Commands
                 await ctx.RespondAsync("Repeating");
             }
        }
-        [Command("player")]
-        [Description("Brings up  music player controls")]
-        [Category("music")]
-        public async Task Player(CommandContext ctx)
-        {
-            var lava = ctx.Client.GetLavalink();
-            var node = lava.ConnectedNodes.Values.First();
-            var conn = node.GetGuildConnection(ctx.Member.VoiceState.Guild);
-               if(conn == null)
-            {
-                await ctx.RespondAsync("What for? Bot isnt connected");
-                    return;
-            }
-               if(conn.CurrentState.CurrentTrack == null)
-            {
-                await ctx.RespondAsync("What for? No track is playing");
-                return;
-            }
-           var builder = new DiscordMessageBuilder()
-                  .WithContent("Player")
-                  .AddComponents(new DiscordComponent[]
-                  {
-                       new DiscordButtonComponent(ButtonStyle.Secondary, "resume", "▶️"),
-                       new DiscordButtonComponent(ButtonStyle.Secondary, "stop", "⏹️"),
-                        new DiscordButtonComponent(ButtonStyle.Secondary, "pause", "⏸️"),
-                        new DiscordButtonComponent(ButtonStyle.Secondary, "skip", "⏭️"),
-                        new DiscordButtonComponent(ButtonStyle.Secondary,"repeat","🔁")
-                 });
-            await ctx.Channel.SendMessageAsync(builder);
-       }
+        
        public static  Task PlayInGuild(LavalinkGuildConnection conn , TrackFinishEventArgs e)
         {
 
@@ -369,9 +331,6 @@ namespace Discord_Bot.Commands
                 
         }
 
-
-
-
         public static async Task OnClick(DiscordClient bot, ComponentInteractionCreateEventArgs e)
         {
             _ = Task.Run(async () => {
@@ -391,11 +350,12 @@ namespace Discord_Bot.Commands
                             await e.Interaction.CreateFollowupMessageAsync(new DiscordFollowupMessageBuilder().WithContent("Im not playing now"));
                             return;
                         }
-                        await connected.StopAsync();
                         if (!music.ContainsKey(e.Guild.Id)) return;
                         var newQueue = music[e.Guild.Id];
                         newQueue.Clear();
                         music[e.Guild.Id] = newQueue;
+                        await connected.StopAsync();
+                        
                        await e.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage, new DiscordInteractionResponseBuilder().WithContent("Queue cleared and player stopped"));
                         break;
                    case "resume":

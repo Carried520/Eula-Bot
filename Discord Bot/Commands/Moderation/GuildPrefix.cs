@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Discord_Bot.Commands.Moderation
+namespace Discord_Bot.Commands.BotInfo
 {
     class PrefixCommands : BaseCommandModule
     {

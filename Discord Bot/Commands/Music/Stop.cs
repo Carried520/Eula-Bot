@@ -33,11 +33,13 @@ namespace Discord_Bot.Commands.Music
             {
                 await ctx.RespondAsync("Player isnt playing now");
             }
-            await conn.StopAsync();
             if (!music.ContainsKey(ctx.Guild.Id)) return;
             var newQueue = music[ctx.Guild.Id];
             newQueue.Clear();
             music[ctx.Guild.Id] = newQueue;
+            await conn.StopAsync();
+            
+            
             await ctx.Channel.SendMessageAsync("Cleared queue and stopped the player");
         }
     }

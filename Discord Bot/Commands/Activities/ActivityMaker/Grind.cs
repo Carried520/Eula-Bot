@@ -89,9 +89,20 @@ namespace Discord_Bot.Commands.Activities.ActivityMaker
 
 
         }
-        [Command("spots")]
+
+
+
+        
+
+
+
+
+
+
+            [Command("spots")]
         [Description("list of spots")]
         [Category("activity")]
+        
         public async Task GrindList (CommandContext ctx)
         {
             string[] spots = {  "grassbeetles","imps","aakman", "se", "sycraia", "orcs"};

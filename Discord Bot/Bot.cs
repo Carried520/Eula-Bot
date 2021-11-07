@@ -36,8 +36,6 @@ namespace Discord_Bot
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
             var token = Config.Get("token");
-            
-            
             var Bot = new DiscordShardedClient(new DiscordConfiguration
             {
                 Token = token,
@@ -46,9 +44,6 @@ namespace Discord_Bot
                 MinimumLogLevel = LogLevel.Debug
 
             });
-            
-
-
             
             stopwatch.Stop();
             Console.WriteLine("Elapsed Time is {0} ms", stopwatch.ElapsedMilliseconds);

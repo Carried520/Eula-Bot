@@ -43,11 +43,12 @@ namespace Discord_Bot.SlashCommands.Music
                 await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder().WithContent("Lavalink is not playing."));
                 return;
             }
-            await conn.StopAsync();
             if (!music.ContainsKey(ctx.Guild.Id)) return;
             var newQueue = music[ctx.Guild.Id];
             newQueue.Clear();
             music[ctx.Guild.Id] = newQueue;
+            await conn.StopAsync();
+            
             await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder().WithContent("Cleared queue and stopped the player"));
         }
 

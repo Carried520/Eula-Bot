@@ -42,6 +42,12 @@
     </Resource>
   </ItemGroup>
 
-  <ProjectExtensions><VisualStudio><UserProperties commands_4music_4spot_1json__JsonSchema="https://appsemble.app/api.json" /></VisualStudio></ProjectExtensions>
+  <ItemGroup>
+    <None Update="Changelog.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ProjectExtensions><VisualStudio><UserProperties /></VisualStudio></ProjectExtensions>
 
 </Project>

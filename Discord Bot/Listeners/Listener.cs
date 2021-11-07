@@ -1,12 +1,14 @@
-﻿using Discord_Bot.Commands;
+﻿using Discord_Bot.Attributes;
+using Discord_Bot.Commands;
 using Discord_Bot.Commands.Activities;
 using Discord_Bot.Commands.Activities.ActivityMaker;
 using Discord_Bot.Commands.Birthday;
 using Discord_Bot.Commands.BotInfo;
 using Discord_Bot.Commands.Guild;
-using Discord_Bot.Commands.Moderation;
+using Discord_Bot.Commands.BotInfo;
 using Discord_Bot.Commands.Music;
 using Discord_Bot.Commands.Rp;
+using Discord_Bot.Services;
 using Discord_Bot.SlashCommands;
 using Discord_Bot.SlashCommands.Music;
 using Discord_Bot.Utils;
@@ -16,7 +18,6 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.CommandsNext.Exceptions;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
-using DSharpPlus.Interactivity.Extensions;
 using DSharpPlus.Lavalink;
 using DSharpPlus.Lavalink.EventArgs;
 using DSharpPlus.Net;
@@ -55,19 +56,6 @@ namespace Discord_Bot
         }
 
 
-        public class GuildPrefix
-        {
-            public ulong Id { get; set; }
-            public string Prefix { get; set; }
-
-        }
-
-        public class UserPrefix
-        {
-            public ulong Id { get; set; }
-            public string Prefix { get; set; }
-
-        }
 
 
         private static Timer _timer;
@@ -90,6 +78,8 @@ namespace Discord_Bot
 
             var services = new ServiceCollection()
                .AddSingleton<Random>()
+               .AddSingleton<DiscordService>()
+               .AddSingleton<DatabaseService>()
                .BuildServiceProvider();
 
 
@@ -151,15 +141,21 @@ namespace Discord_Bot
                 cmd.RegisterCommands<Grind>();
                 cmd.RegisterCommands<Shop>();
                 cmd.RegisterCommands<PrefixCommands>();
+                cmd.RegisterCommands<Changelog>();
+                cmd.RegisterCommands<RpCommands>();
                 cmd.SetHelpFormatter<CustomHelpFormatter>();
-
+                
 
 
                 cmd.CommandErrored += OnError;
+                
 
             }
 
-            var slash = await bot.UseSlashCommandsAsync();
+            var slash = await bot.UseSlashCommandsAsync(new SlashCommandsConfiguration
+            {
+                Services = new ServiceCollection().AddSingleton<SlashService>().BuildServiceProvider()
+            }); 
             foreach (var SlashCommand in slash.Values)
             {
 
@@ -187,6 +183,7 @@ namespace Discord_Bot
             }
 
             bot.Ready += OnReady;
+            bot.GuildMemberAdded += OnGuildMemberJoin;
             bot.GuildDownloadCompleted += OnGuildDownload;
             bot.MessageCreated += OnMessageCreated;
             bot.ComponentInteractionCreated += Play.OnClick;
@@ -204,12 +201,17 @@ namespace Discord_Bot
         {
             _ = Task.Run(async () =>
             {
-                Random random = new Random();
-                var members = e.Context.Guild.Members;
-                int index = random.Next(members.Count);
-                var key = members.Values.ElementAt(index);
-
-                await e.Context.Channel.SendMessageAsync($" Slash Command {e.Context.CommandName} failed to execute ");
+                var context = e.Context;
+                if(e.Exception is SlashExecutionChecksFailedException slex)
+                {
+                    foreach(var check in slex.FailedChecks)
+                    {
+                        if(check is SlashRequireNsfwAttribute)
+                        {
+                            await e.Context.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().WithContent($"This command can be only run in nsfw channel"));
+                        }
+                    }
+                }
 
             });
             return Task.CompletedTask;
@@ -309,8 +311,8 @@ namespace Discord_Bot
 
 
 
-                var channel = e.Guilds[875583069678092329].GetChannel(875585800870457355);
-                var role = e.Guilds[875583069678092329].GetRole(876317727801880647);
+                var channel = e.Guilds[875583069678092329L].GetChannel(875585800870457355L);
+                var role = e.Guilds[875583069678092329L].GetRole(876317727801880647L);
 
 
                 var bossOne = new BossSchedule().Bosses();
@@ -450,42 +452,15 @@ namespace Discord_Bot
 
                 var cnext = bot.GetCommandsNext();
                 var msg = e.Message;
-                var client = new MongoClient(Config.Get("uri"));
-                var database = client.GetDatabase("Csharp");
-                var collection = database.GetCollection<GuildPrefix>("guildprefixes");
-                var filter = Builders<GuildPrefix>.Filter.Eq("_id", e.Guild.Id);
-                var UserCollection = database.GetCollection<UserPrefix>("userprefixes");
-                var Userfilter = Builders<UserPrefix>.Filter.Eq("_id", e.Author.Id);
-
-               
-                
-                var match = await collection.FindAsync(filter);
-                var matched = await match.FirstOrDefaultAsync();
-                var UserMatch = await UserCollection.FindAsync(Userfilter);
-                var UserMatched = await UserMatch.FirstOrDefaultAsync();
-
-                int GuildPrefix = -1;
-                int UserPrefix = -1;
-                if (matched != null)
-                {
-                   GuildPrefix = msg.GetStringPrefixLength(matched.Prefix, StringComparison.InvariantCultureIgnoreCase);
-                   
-                }
-                if(UserMatched != null)
-                {
-                    
-                    UserPrefix = msg.GetStringPrefixLength(UserMatched.Prefix,StringComparison.InvariantCultureIgnoreCase);
-                    
-                }
-
-
+                var GuildToken = await new GetGuildPrefix().GetPrefixAsync(e.Guild.Id);
+                var UserToken = await new GetGuildPrefix().GetUserPrefix(e.Author.Id);
+                int GuildPrefix = GuildToken != null ? msg.GetStringPrefixLength(GuildToken, StringComparison.InvariantCultureIgnoreCase) : -1;
+                int UserPrefix = UserToken != null ? msg.GetStringPrefixLength(UserToken, StringComparison.InvariantCultureIgnoreCase) : -1;
                 int cmdStart = msg.GetStringPrefixLength(Config.Get("prefix"), StringComparison.InvariantCultureIgnoreCase);
                 if (cmdStart == -1 && GuildPrefix == -1 && UserPrefix == -1) await Task.CompletedTask;
-
                 string prefix = "";
                 string cmdString = "";
-               
-                if (GuildPrefix >0 )
+                if (GuildPrefix > 0)
                 {
                     prefix = msg.Content.Substring(0, GuildPrefix);
 
@@ -502,17 +477,11 @@ namespace Discord_Bot
                      prefix = msg.Content.Substring(0, cmdStart);
                      cmdString = msg.Content.Substring(cmdStart);
                 }
-
-               
-
-
-
                 var command = cnext.FindCommand(cmdString, out var args);
                 if (command == null) await Task.CompletedTask;
 
                 var ctx = cnext.CreateContext(msg, prefix, command, args);
                await Task.Run(async () => await cnext.ExecuteCommandAsync(ctx));
-
 
             });
 
@@ -537,16 +506,15 @@ namespace Discord_Bot
             Console.WriteLine(e.Exception);
             var ctx = e.Context;
 
-            if (e.Exception.GetType().ToString() == "DSharpPlus.CommandsNext.Exceptions.ChecksFailedException")
+            if (e.Exception is ChecksFailedException)
             {
-
-
+              
                 var failedChecks = ((ChecksFailedException)e.Exception).FailedChecks;
                 foreach (var failedCheck in failedChecks)
                 {
                     if (failedCheck is CooldownAttribute)
                     {
-
+                        
                         var cooldown = (CooldownAttribute)failedCheck;
                         if (cooldown.GetRemainingCooldown(ctx).TotalSeconds > 86400)
                         {
@@ -561,13 +529,16 @@ namespace Discord_Bot
                     else if (failedCheck is RequirePermissionsAttribute)
                     {
                         await e.Context.RespondAsync("You dont have permissions");
+                    } else if (failedCheck is RequireNsfwAttribute)
+                    {
+                        await e.Context.RespondAsync("Not a nsfw channel");
                     }
 
                 }
 
 
             }
-            if (e.Exception.GetType().ToString() == "DSharpPlus.CommandsNext.Exceptions.CommandNotFoundException")
+            if (e.Exception is  CommandNotFoundException)
             {
 
 
@@ -575,14 +546,14 @@ namespace Discord_Bot
                 await ctx.RespondAsync("Command doesnt exist");
             }
 
-            if (e.Exception.GetType().ToString() == "System.ArgumentException")
+            if (e.Exception is ArgumentException)
             {
 
 
                 var sb = new StringBuilder();
-            var attr =   (CooldownAttribute) e.Command.CustomAttributes.FirstOrDefault(x => x is CooldownAttribute);
+            var attr =   (CooldownAttribute ) e.Command.CustomAttributes.FirstOrDefault(x => x is CooldownAttribute);
                
-               
+             
 
                 sb.Append("You can use one of following options:").Append(" ").Append("\n");
 
@@ -601,10 +572,8 @@ namespace Discord_Bot
                 }
 
 
-
                 await ctx.RespondAsync(sb.ToString());
                 
-
 
 
 

@@ -11,7 +11,7 @@ namespace Discord_Bot
 
         public static string Get (string token)
         {
-
+            token = token.ToLower();
             String json = File.ReadAllText("appsettings.json");
             JsonDocument Deserialize = JsonDocument.Parse(json);
             JsonElement root = Deserialize.RootElement;
