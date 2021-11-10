@@ -2,12 +2,6 @@
 using Discord_Bot.Services;
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
-using DSharpPlus.SlashCommands.Attributes;
-using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Text;
-using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Discord_Bot.SlashCommands
@@ -32,7 +26,6 @@ namespace Discord_Bot.SlashCommands
         public async Task Pat(InteractionContext ctx, [Option("user", "mention a user")] DiscordUser user)
         {
             await ctx.CreateResponseAsync(DSharpPlus.InteractionResponseType.DeferredChannelMessageWithSource);
-            
             var embed = Slash.SendRpEmbed(ctx, "https://purrbot.site/api/img/sfw/pat/gif", "link", "pats", user);
             await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder().AddEmbed(embed));
             

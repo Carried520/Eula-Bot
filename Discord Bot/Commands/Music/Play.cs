@@ -1,19 +1,14 @@
 ﻿using Discord_Bot.Attributes;
-using Discord_Bot.Services;
 using Discord_Bot.Utils;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
-using DSharpPlus.Interactivity;
-using DSharpPlus.Interactivity.Enums;
-using DSharpPlus.Interactivity.Extensions;
 using DSharpPlus.Lavalink;
 using DSharpPlus.Lavalink.EventArgs;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -264,7 +259,7 @@ namespace Discord_Bot.Commands
                             var newQueue = music[ctx.Guild.Id];
                             newQueue.Add(track);
                             music[ctx.Guild.Id] = newQueue;
-                        }
+                        }   
                     }
                 }
 
@@ -339,8 +334,10 @@ namespace Discord_Bot.Commands
                 var connected = nodes.GetGuildConnection(e.Guild);
                 switch (e.Id)
                 {
+                    
                     case "stop":
-                       if (connected == null)
+                        await e.Interaction.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource);
+                        if (connected == null)
                         {
                             await e.Interaction.CreateFollowupMessageAsync(new DiscordFollowupMessageBuilder().WithContent("Im not connected"));
                             return;
@@ -350,13 +347,15 @@ namespace Discord_Bot.Commands
                             await e.Interaction.CreateFollowupMessageAsync(new DiscordFollowupMessageBuilder().WithContent("Im not playing now"));
                             return;
                         }
-                        if (!music.ContainsKey(e.Guild.Id)) return;
-                        var newQueue = music[e.Guild.Id];
-                        newQueue.Clear();
-                        music[e.Guild.Id] = newQueue;
+                        if (music.ContainsKey(e.Guild.Id))
+                        {
+                            var newQueue = music[e.Guild.Id];
+                            newQueue.Clear();
+                            music[e.Guild.Id] = newQueue;
+                        }
                         await connected.StopAsync();
-                        
-                       await e.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage, new DiscordInteractionResponseBuilder().WithContent("Queue cleared and player stopped"));
+
+                        await e.Interaction.CreateFollowupMessageAsync(new DiscordFollowupMessageBuilder().WithContent("Queue cleared and player stopped"));
                         break;
                    case "resume":
                         await e.Interaction.CreateResponseAsync(InteractionResponseType.DeferredMessageUpdate);

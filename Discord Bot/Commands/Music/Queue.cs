@@ -66,7 +66,7 @@ namespace Discord_Bot.Commands.Music
             catch (Exception)
             {
 
-                await ctx.Channel.SendMessageAsync("Are u an actual baka no queue is running");
+                await ctx.Channel.SendMessageAsync("No queue is running");
             }
         }
     }

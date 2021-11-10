@@ -2,10 +2,7 @@
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Lavalink;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Discord_Bot.Commands
@@ -22,6 +19,12 @@ namespace Discord_Bot.Commands
 
             var lava = ctx.Client.GetLavalink();
             var node = lava.ConnectedNodes.Values.First();
+            if (ctx.Member.VoiceState == null || ctx.Member.VoiceState.Channel == null)
+            {
+                await ctx.RespondAsync("You are not in a voice channel.");
+                return;
+            }
+
             var conn = node.GetGuildConnection(ctx.Member.VoiceState.Guild);
 
             if (conn == null)

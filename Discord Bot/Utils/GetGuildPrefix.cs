@@ -1,7 +1,5 @@
 ﻿using MongoDB.Driver;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Discord_Bot.Utils
@@ -10,7 +8,7 @@ namespace Discord_Bot.Utils
     public class GuildPrefix
     {
         public ulong Id { get; set; }
-        public string Prefix { get; set; }
+        public  List<string> Prefixes { get; set; }
 
     }
 
@@ -18,7 +16,7 @@ namespace Discord_Bot.Utils
     public class UserPrefix
     {
         public ulong Id { get; set; }
-        public string Prefix { get; set; }
+        public List<string> Prefixes { get; set; }
 
     }
 
@@ -27,7 +25,7 @@ namespace Discord_Bot.Utils
 
   public  class GetGuildPrefix
     {
-        public async Task<string> GetPrefixAsync (ulong id)
+        public async Task<List<string>> GetPrefixAsync (ulong id)
         {
             var client = new MongoClient(Config.Get("uri"));
             var database = client.GetDatabase("Csharp");
@@ -35,10 +33,10 @@ namespace Discord_Bot.Utils
             var filter = Builders<GuildPrefix>.Filter.Eq("_id", id);
             var match = await collection.FindAsync(filter);
             var matched = await match.FirstOrDefaultAsync();
-            string prefix;
+            List<string> prefix;
             if (matched != null)
             {
-                prefix = matched.Prefix;
+                prefix = matched.Prefixes;
             }
             else
             {
@@ -48,7 +46,7 @@ namespace Discord_Bot.Utils
             
         }
 
-        public async Task <string> GetUserPrefix (ulong id)
+        public async Task <List<string>> GetUserPrefix (ulong id)
         {
             var client = new MongoClient(Config.Get("uri"));
             var database = client.GetDatabase("Csharp");
@@ -57,10 +55,10 @@ namespace Discord_Bot.Utils
 
             var UserMatch = await UserCollection.FindAsync(Userfilter);
             var UserMatched = await UserMatch.FirstOrDefaultAsync();
-            string prefix;
+            List<string> prefix;
             if (UserMatched != null)
             {
-                prefix = UserMatched.Prefix;
+                prefix = UserMatched.Prefixes;
             }
             else
             {

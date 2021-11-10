@@ -2,8 +2,6 @@
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Discord_Bot.Commands
@@ -17,7 +15,11 @@ namespace Discord_Bot.Commands
         [Category("rp")]
         public async Task Coin(CommandContext ctx, [Description("Heads or Tails")]string input)
         {
-            
+            if(input.ToLower() != "heads" || input.ToLower() != "tails")
+            {
+                await ctx.RespondAsync("Use heads or tails");
+                return;
+            }
             string outcome = Rng.Next(0, 1) == 1 ? "heads" : "tails";
            
 

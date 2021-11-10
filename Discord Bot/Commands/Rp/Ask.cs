@@ -4,8 +4,6 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity.Extensions;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Discord_Bot.Commands
@@ -29,12 +27,10 @@ namespace Discord_Bot.Commands
             var poll = await interact.DoPollAsync(message, emojis, DSharpPlus.Interactivity.Enums.PollBehaviour.DeleteEmojis, TimeSpan.FromSeconds(30));
             var yes = poll[0].Voted.Count;
             var no = poll[1].Voted.Count;
-            Console.WriteLine(yes);
+            
             
 
-            
-            Console.WriteLine(yes);
-            Console.WriteLine(no);
+           
             if (yes > no)
             {
                 await ctx.Channel.SendMessageAsync("Most ppl agree!");

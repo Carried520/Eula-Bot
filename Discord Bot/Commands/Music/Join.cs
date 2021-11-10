@@ -2,16 +2,8 @@
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
 using DSharpPlus.Lavalink;
-using DSharpPlus.Net.Models;
-using DSharpPlus.VoiceNext;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Discord_Bot.Commands
@@ -29,6 +21,11 @@ namespace Discord_Bot.Commands
             if (!link.ConnectedNodes.Any())
             {
                 await ctx.RespondAsync("The Lavalink connection is not established");
+                return;
+            }
+            if (ctx.Member.VoiceState == null || ctx.Member.VoiceState.Channel == null)
+            {
+                await ctx.RespondAsync("You are not in a voice channel.");
                 return;
             }
             var node = link.ConnectedNodes.Values.First();

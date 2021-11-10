@@ -25,12 +25,13 @@ namespace Discord_Bot.Commands.Guild
         [Command("guildmission")]
         [Description("Guildmission tool")]
         [Category("guild")]
+        [RequireCertainGuild(875583069678092329UL)]
 
         public async Task  GuildCommand(CommandContext ctx,params string[] content)
         {
-            if (!(ctx.Guild.Id == 875583069678092329)) return;
-            bool isOfficer = ctx.Member.Roles.Any(x => x.Id == 875592076002230323);
-            if (!isOfficer || !(ctx.Channel.Id == 875583602610552833)) return;
+            
+            bool isOfficer = ctx.Member.Roles.Any(x => x.Id == 875592076002230323UL);
+            if (!isOfficer || !(ctx.Channel.Id == 875583602610552833UL)) return;
 
             var list = content.ToList();
             list.RemoveAll(x=>x==",");

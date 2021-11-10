@@ -2,10 +2,6 @@
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-using DSharpPlus.VoiceNext;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Discord_Bot.Commands
@@ -19,8 +15,13 @@ namespace Discord_Bot.Commands
 
         public  async Task MuteCommand(CommandContext ctx,DiscordMember member)
         {
-            
-          await  member.SetMuteAsync(true);
+            if (member.VoiceState == null || member.VoiceState.Channel == null)
+            {
+                await ctx.RespondAsync("You are not in a voice channel.");
+                return;
+            }
+
+            await  member.SetMuteAsync(true);
             await ctx.Channel.SendMessageAsync($"Muted {member.Mention}");
 
         }

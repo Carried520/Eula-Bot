@@ -3,9 +3,6 @@ using Discord_Bot.Services;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Discord_Bot.Commands.Rp
@@ -39,7 +36,7 @@ namespace Discord_Bot.Commands.Rp
         }
 
         [Command("fuck")]
-        [Category("rp")]
+        [Category("nsfw")]
         [RequireNsfw]
         [Description("fuck")]
         public async Task Fuck(CommandContext ctx, DiscordMember user)
@@ -52,7 +49,7 @@ namespace Discord_Bot.Commands.Rp
 
 
         [Command("cum")]
-        [Category("rp")]
+        [Category("nsfw")]
         [RequireNsfw]
         [Description("cum")]
         public async Task Cum(CommandContext ctx, DiscordMember user)
@@ -65,7 +62,7 @@ namespace Discord_Bot.Commands.Rp
 
 
         [Command("blowjob")]
-        [Category("rp")]
+        [Category("nsfw")]
         [RequireNsfw]
         [Description("blowjob")]
         public async Task Blowjob(CommandContext ctx, DiscordMember user)
@@ -78,7 +75,7 @@ namespace Discord_Bot.Commands.Rp
 
 
         [Command("anal")]
-        [Category("rp")]
+        [Category("nsfw")]
         [RequireNsfw]
         [Description("anal")]
         public async Task Anal(CommandContext ctx, DiscordMember user)
@@ -91,7 +88,7 @@ namespace Discord_Bot.Commands.Rp
 
 
         [Command("yaoi")]
-        [Category("rp")]
+        [Category("nsfw")]
         [RequireNsfw]
         [Description("yaoi")]
         public async Task Yaoi(CommandContext ctx, DiscordMember user)
@@ -104,7 +101,7 @@ namespace Discord_Bot.Commands.Rp
 
 
         [Command("yuri")]
-        [Category("rp")]
+        [Category("nsfw")]
         [RequireNsfw]
         [Description("yuri")]
         public async Task Yuri(CommandContext ctx, DiscordMember user)

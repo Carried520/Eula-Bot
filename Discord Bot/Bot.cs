@@ -1,26 +1,14 @@
-﻿
-using Discord_Bot.Commands;
-using DSharpPlus;
-using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.CommandsNext.Exceptions;
-using Microsoft.Extensions.DependencyInjection;
+﻿using DSharpPlus;
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using DSharpPlus.Lavalink;
-using DSharpPlus.Net;
 using Microsoft.Extensions.Logging;
-using System.Linq;
 using DSharpPlus.Interactivity.Extensions;
-using DSharpPlus.SlashCommands;
-using Discord_Bot.SlashCommands;
-using System.Collections;
 
 
 namespace Discord_Bot
 {
-    
+
     class Bot
     {
 

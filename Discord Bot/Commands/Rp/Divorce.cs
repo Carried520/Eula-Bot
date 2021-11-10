@@ -1,11 +1,7 @@
 ﻿using Discord_Bot.Attributes;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
 using MongoDB.Driver;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Discord_Bot.Commands.Rp
@@ -21,7 +17,7 @@ namespace Discord_Bot.Commands.Rp
         }
 
         [Command("divorce")]
-        [Description("divorce this bish")]
+        [Description("divorce your partner")]
         [Category("rp")]
         public async Task DivorceCommand(CommandContext ctx)
         {

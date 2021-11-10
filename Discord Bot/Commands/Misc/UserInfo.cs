@@ -3,8 +3,6 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Discord_Bot.Commands
@@ -21,7 +19,7 @@ namespace Discord_Bot.Commands
             .AddField("Created on", $"{member.CreationTimestamp}", false)
            .AddField("Joined Server on", $"{member.JoinedAt}", false)
            .WithImageUrl($"{member.AvatarUrl}")
-            .WithFooter($"Powered by C#(not this shitty Java) ")
+            .WithFooter($"Powered by C# ")
             .WithTimestamp(DateTime.Now)
             .WithTitle("Userinfo");
             return embed;

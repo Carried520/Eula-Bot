@@ -3,9 +3,7 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using System;
-using System.Collections.Generic;
 using System.Net;
-using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -27,7 +25,7 @@ namespace Discord_Bot.Commands
                .WithColor(DiscordColor.SpringGreen)
                .WithImageUrl(results.GetString())
                .WithTimestamp(DateTime.Now)
-               .WithFooter("Powered by C#(not this shitty Java)")
+               .WithFooter("Powered by C#")
                .WithTitle("Random Shibe")
                .Build();
             await ctx.Channel.SendMessageAsync(embed);

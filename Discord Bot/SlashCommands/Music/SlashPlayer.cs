@@ -43,10 +43,13 @@ namespace Discord_Bot.SlashCommands.Music
                 await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder().WithContent("Lavalink is not playing."));
                 return;
             }
-            if (!music.ContainsKey(ctx.Guild.Id)) return;
-            var newQueue = music[ctx.Guild.Id];
-            newQueue.Clear();
-            music[ctx.Guild.Id] = newQueue;
+            if (music.ContainsKey(ctx.Guild.Id))
+            {
+                var newQueue = music[ctx.Guild.Id];
+                newQueue.Clear();
+                music[ctx.Guild.Id] = newQueue;
+            }
+            
             await conn.StopAsync();
             
             await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder().WithContent("Cleared queue and stopped the player"));
@@ -165,6 +168,11 @@ namespace Discord_Bot.SlashCommands.Music
             if (conn == null)
             {
                 await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder().WithContent("Lavalink is not connected."));
+                return;
+            }
+            if(conn.CurrentState.CurrentTrack == null)
+            {
+                await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder().WithContent("Not track playing at the moment."));
                 return;
             }
 

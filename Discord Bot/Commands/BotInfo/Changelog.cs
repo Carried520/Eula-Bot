@@ -1,9 +1,7 @@
 ﻿using Discord_Bot.Attributes;
-using Discord_Bot.Services;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-using System;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;

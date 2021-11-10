@@ -179,7 +179,7 @@ namespace Discord_Bot.SlashCommands
                     if (conn.CurrentState.CurrentTrack == null)
                     {
                         var builder = new DiscordFollowupMessageBuilder()
-                            .WithContent("Player - Look at this bonbon bot it doesn't even have playlist or url support for play slash command :laughing:")
+                            .WithContent("Player")
                             .AddComponents(new DiscordComponent[]
                             {
                       new DiscordButtonComponent(ButtonStyle.Secondary, "resume", "▶️"),
@@ -235,7 +235,7 @@ namespace Discord_Bot.SlashCommands
                     if (connect.CurrentState.CurrentTrack == null)
                     {
                         var builder = new DiscordFollowupMessageBuilder()
-                            .WithContent("Player - Look at this bonbon bot it doesn't even have playlist or url support for play slash command :laughing:")
+                            .WithContent("Player")
                             .AddComponents(new DiscordComponent[]
                             {
                       new DiscordButtonComponent(ButtonStyle.Secondary, "resume", "▶️"),

@@ -7,7 +7,6 @@ using DSharpPlus.Entities;
 using System;
 using System.Collections.Generic;
 using System.Net;
-using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Web;
@@ -82,7 +81,7 @@ namespace Discord_Bot.Commands
                         {
                             var emoji = DiscordEmoji.FromName(ctx.Client, ":kekw:", true);
                             await e.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage,
-                                new DiscordInteractionResponseBuilder().WithContent($"Incorrect  answer {emoji} "));
+                                new DiscordInteractionResponseBuilder().WithContent($"Incorrect  answer"));
                         }
 
                     });

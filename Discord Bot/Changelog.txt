@@ -1,3 +1,2 @@
-﻿Introduced Dependency Injection
-Introduced nsfw slash commands(Registration time 1 hr from new bot version release so be patient)
-Introduced nsfw commands
+﻿Added Feature where u can set 10 user prefixes and 10 guild prefixes
+Improved Command Execution Speed

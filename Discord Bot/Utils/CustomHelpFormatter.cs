@@ -4,16 +4,14 @@ using DSharpPlus.CommandsNext.Converters;
 using DSharpPlus.CommandsNext.Entities;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
-using DSharpPlus.Interactivity.Extensions;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
 namespace Discord_Bot.Utils
 {
-    
-  public  class CustomHelpFormatter : BaseHelpFormatter
+
+    public  class CustomHelpFormatter : BaseHelpFormatter
     {
 
         protected DiscordEmbedBuilder _embed;
@@ -23,11 +21,12 @@ namespace Discord_Bot.Utils
         public CustomHelpFormatter(CommandContext ctx) : base(ctx)
         {
             _embed = new DiscordEmbedBuilder();
-           
-         
-           
-                
             
+
+
+
+
+
         }
 
         public string Categorize (IEnumerable<Command> subcommands , string categorize)
@@ -44,14 +43,7 @@ namespace Discord_Bot.Utils
                     builder.Append(cmd.Name).Append("\n");
                 }
             }
-            foreach (var cmd in subcommands)
-            {
-
-                if (string.IsNullOrEmpty(builder.ToString()))
-                {
-                    builder.Append(cmd.Name).Append("\n");
-                }
-            }
+            
             
             return builder.ToString();
         }
@@ -74,10 +66,13 @@ namespace Discord_Bot.Utils
             
            for(int i =0;i<result.Count;i++)
             {
+                
                  sb.Append($"{i+1} option:");
                 foreach (var overload in result[i].Arguments)
                 {
-                    sb.Append(" ").Append($"{overload.Name}").Append(" ").Append($"<{ overload.Description}>").Append(" ");
+                   if(overload == null) sb.Append(" ").Append($"No optional arguments").Append(" ");
+                   
+                   else sb.Append(" ").Append($"{overload.Name}").Append(" ").Append($"<{ overload.Description}>").Append(" ");
                 }
                 sb.Append("\n");
                 
@@ -104,14 +99,21 @@ namespace Discord_Bot.Utils
 
 
 
-            
+
             _embed.AddField("Misc", Categorize(subcommands, "misc"), true)
                 .AddField("Botinfo", Categorize(subcommands, "botinfo"), true)
-                .AddField("guild-only", Categorize(subcommands, "guild"), true)
                 .AddField("music", Categorize(subcommands, "music"), true)
                 .AddField("rp", Categorize(subcommands, "rp"), true)
                 .AddField("moderation", Categorize(subcommands, "moderation"), true);
+              
+            if (!string.IsNullOrWhiteSpace(Categorize(subcommands, "guild")))
+            {
+                _embed.AddField("ahegao-guild-only", Categorize(subcommands, "guild"), true);
 
+            }  if (!string.IsNullOrWhiteSpace(Categorize(subcommands, "nsfw")))
+            {
+                  _embed.AddField("nsfw", Categorize(subcommands, "nsfw"), true);
+            }
             return this;
         }
     }

@@ -1,11 +1,8 @@
 ﻿using Discord_Bot.Attributes;
 using Discord_Bot.Commands;
-using Discord_Bot.Commands.Activities;
-using Discord_Bot.Commands.Activities.ActivityMaker;
 using Discord_Bot.Commands.Birthday;
 using Discord_Bot.Commands.BotInfo;
 using Discord_Bot.Commands.Guild;
-using Discord_Bot.Commands.BotInfo;
 using Discord_Bot.Commands.Music;
 using Discord_Bot.Commands.Rp;
 using Discord_Bot.Services;
@@ -60,6 +57,7 @@ namespace Discord_Bot
 
         private static Timer _timer;
         private static Timer _BossTimer;
+        private static Timer _presence;
 
 
 
@@ -87,23 +85,21 @@ namespace Discord_Bot
             {
                 StringPrefixes = new[] { Config.Get("prefix") },
                 Services = services,
-                UseDefaultCommandHandler = false
-
-
-            });
+                UseDefaultCommandHandler = true,
+                PrefixResolver = ResolvePrefix,
+                EnableMentionPrefix = false
+            }) ; 
 
 
 
             foreach (var cmd in Commands.Values)
             {
-                cmd.RegisterCommands<hello>();
                 cmd.RegisterCommands<RandomCommand>();
                 cmd.RegisterCommands<Fox>();
                 cmd.RegisterCommands<Clear>();
                 cmd.RegisterCommands<CoinFlip>();
                 cmd.RegisterCommands<UserInfo>();
                 cmd.RegisterCommands<Question>();
-                cmd.RegisterCommands<Reaction>();
                 cmd.RegisterCommands<Mute>();
                 cmd.RegisterCommands<Unmute>();
                 cmd.RegisterCommands<Join>();
@@ -113,7 +109,6 @@ namespace Discord_Bot
                 cmd.RegisterCommands<Track>();
                 cmd.RegisterCommands<Skip>();
                 cmd.RegisterCommands<RedditCmd>();
-                cmd.RegisterCommands<Dm>();
                 cmd.RegisterCommands<Clock>();
                 cmd.RegisterCommands<Ask>();
                 cmd.RegisterCommands<Marry>();
@@ -132,17 +127,18 @@ namespace Discord_Bot
                 cmd.RegisterCommands<BotInviteLink>();
                 cmd.RegisterCommands<DevServerLink>();
                 cmd.RegisterCommands<FeedbackCommand>();
-                cmd.RegisterCommands<CharacterCreation>();
-                cmd.RegisterCommands<ActivityHelp>();
+              //  cmd.RegisterCommands<CharacterCreation>();
+               // cmd.RegisterCommands<ActivityHelp>();
                 cmd.RegisterCommands<MoveToAfk>();
                 cmd.RegisterCommands<Kick>();
-                cmd.RegisterCommands<CharInfo>();
-                cmd.RegisterCommands<CharList>();
-                cmd.RegisterCommands<Grind>();
-                cmd.RegisterCommands<Shop>();
+               // cmd.RegisterCommands<CharInfo>();
+               // cmd.RegisterCommands<CharList>();
+               // cmd.RegisterCommands<Grind>();
+               // cmd.RegisterCommands<Shop>();
                 cmd.RegisterCommands<PrefixCommands>();
                 cmd.RegisterCommands<Changelog>();
                 cmd.RegisterCommands<RpCommands>();
+                cmd.RegisterCommands<Player>();
                 cmd.SetHelpFormatter<CustomHelpFormatter>();
                 
 
@@ -158,15 +154,14 @@ namespace Discord_Bot
             }); 
             foreach (var SlashCommand in slash.Values)
             {
-
+                
                 SlashCommand.RegisterCommands<Delete>();
                 SlashCommand.RegisterCommands<Userinfo>();
                 SlashCommand.RegisterCommands<RedditSlash>();
-                SlashCommand.RegisterCommands<DmSlash>();
                 SlashCommand.RegisterCommands<TimerSlash>();
                 SlashCommand.RegisterCommands<Rp>();
                 SlashCommand.RegisterCommands<Pets>();
-                SlashCommand.RegisterCommands<Faq>();
+               SlashCommand.RegisterCommands<Faq>();
                 SlashCommand.RegisterCommands<JoinSlash>();
                 SlashCommand.RegisterCommands<SlashPlay>();
                 SlashCommand.RegisterCommands<SlashPlayer>();
@@ -185,10 +180,67 @@ namespace Discord_Bot
             bot.Ready += OnReady;
             bot.GuildMemberAdded += OnGuildMemberJoin;
             bot.GuildDownloadCompleted += OnGuildDownload;
-            bot.MessageCreated += OnMessageCreated;
             bot.ComponentInteractionCreated += Play.OnClick;
 
 
+
+
+           
+           
+
+
+            _ = Task.Run(async () =>
+            {
+
+
+
+
+
+                int _statusIndex = 0;
+
+                _presence = new Timer(async _ =>
+                {
+                    
+                    var guilds = 0;
+                    var count = 0;
+                    var channels = 0;
+                    var memberList = new List<DiscordMember>();
+                    foreach (var client in bot.ShardClients)
+                    {
+                        guilds += client.Value.Guilds.Count;
+                        foreach (var guild in client.Value.Guilds.Values)
+                        {
+
+                            count += guild.MemberCount;
+                            channels += guild.Channels.Count;
+                        }
+
+
+                    }
+
+
+                    List<string> _list = new List<string> {bot.ShardClients.Count + " Shards!",guilds + " Guilds",
+                count + " Users", channels + " Channels", "Some C# game",  "Probably first C# bot to use music player with interactable buttons!",
+                "Watching you through my hidden camera","Do you hear the people sing?"};
+
+
+                    await bot.UpdateStatusAsync(new DiscordActivity(_list.ElementAtOrDefault(_statusIndex), ActivityType.Playing));
+                    _statusIndex = _statusIndex + 1 == _list.Count ? 0 : _statusIndex + 1;
+
+
+
+
+
+
+                },
+                 null,
+                 TimeSpan.FromSeconds(1),
+                 TimeSpan.FromSeconds(15));
+
+
+                await Task.Delay(-1);
+
+            });
 
 
 
@@ -209,6 +261,9 @@ namespace Discord_Bot
                         if(check is SlashRequireNsfwAttribute)
                         {
                             await e.Context.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().WithContent($"This command can be only run in nsfw channel"));
+                        } else if(check is SlashRequireOtherUserAttribute)
+                        {
+                            await e.Context.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().WithContent($"You cant mention yourself in this command"));
                         }
                     }
                 }
@@ -222,10 +277,13 @@ namespace Discord_Bot
         {
             _ = Task.Run(async () =>
             {
-                if (e.Guild.Id == 875583069678092329L)
+              
+                if (e.Guild.Id == 875583069678092329UL)
                 {
-                    var role = e.Guild.GetRole(875592272647946282L);
-                    await e.Member.GrantRoleAsync(role);
+                    Console.WriteLine(e.Guild.Id);
+                    var role =  e.Guild.GetRole(875592272647946282UL);
+                     var member = await e.Guild.GetMemberAsync(e.Member.Id);
+                    await member.GrantRoleAsync(role);
                 }
             });
             return Task.CompletedTask;
@@ -233,35 +291,17 @@ namespace Discord_Bot
         }
         public static Task OnGuildDownload(DiscordClient bot, GuildDownloadCompletedEventArgs e)
         {
+
             _ = Task.Run(async () =>
             {
 
 
-                var count = 0;
-                var channels = 0;
-                var memberList = new List<DiscordMember>();
-                foreach (var guild in e.Guilds)
-                {
-
-                    count += guild.Value.MemberCount;
-                    channels += guild.Value.Channels.Count;
-
-
-
-
-                }
-
-
-
-
-
-                List<string> _list = new List<string> {bot.ShardCount + " Shards!",e.Guilds.Count + " Guilds",
-                count + " Users",channels + " Channels", "Some C# game", "Json is son of J", "Is Austria even a country", "Very first C# bot to use music player with interactable buttons!",
-                "Watching you through my hidden camera","C#>Java","Do you hear the people sing?"};
-                int _statusIndex = 0;
-
                 _timer = new Timer(async _ =>
                 {
+
+                    
+
+                   
 
 
                     var today = DateTime.Now;
@@ -293,14 +333,6 @@ namespace Discord_Bot
 
                     }
 
-                    await bot.UpdateStatusAsync(new DiscordActivity(_list.ElementAtOrDefault(_statusIndex), ActivityType.Playing));
-                    _statusIndex = _statusIndex + 1 == _list.Count ? 0 : _statusIndex + 1;
-
-
-
-
-
-
                 },
                  null,
                  TimeSpan.FromSeconds(1),
@@ -311,8 +343,8 @@ namespace Discord_Bot
 
 
 
-                var channel = e.Guilds[875583069678092329L].GetChannel(875585800870457355L);
-                var role = e.Guilds[875583069678092329L].GetRole(876317727801880647L);
+                var channel = e.Guilds[875583069678092329UL].GetChannel(875585800870457355UL);
+                var role = e.Guilds[875583069678092329UL].GetRole(876317727801880647UL);
 
 
                 var bossOne = new BossSchedule().Bosses();
@@ -412,6 +444,10 @@ namespace Discord_Bot
                 });
 
 
+               
+
+
+
 
 
 
@@ -424,6 +460,9 @@ namespace Discord_Bot
 
             return Task.CompletedTask;
         }
+
+
+        
 
 
         public static Task OnVoiceUpdated(LavalinkGuildConnection guildConnection, PlayerUpdateEventArgs e)
@@ -445,59 +484,47 @@ namespace Discord_Bot
         }
 
 
-        public static Task OnMessageCreated(DiscordClient bot, MessageCreateEventArgs e)
+
+
+
+
+
+
+        private static async Task<int> ResolvePrefix(DiscordMessage message)
         {
-            _ = Task.Run(async () =>
+            if (message.Channel.Type == ChannelType.Private) await Task.FromResult(0);
+            var guild = message.Channel.Guild;
+            if(guild == null)
             {
-
-                var cnext = bot.GetCommandsNext();
-                var msg = e.Message;
-                var GuildToken = await new GetGuildPrefix().GetPrefixAsync(e.Guild.Id);
-                var UserToken = await new GetGuildPrefix().GetUserPrefix(e.Author.Id);
-                int GuildPrefix = GuildToken != null ? msg.GetStringPrefixLength(GuildToken, StringComparison.InvariantCultureIgnoreCase) : -1;
-                int UserPrefix = UserToken != null ? msg.GetStringPrefixLength(UserToken, StringComparison.InvariantCultureIgnoreCase) : -1;
-                int cmdStart = msg.GetStringPrefixLength(Config.Get("prefix"), StringComparison.InvariantCultureIgnoreCase);
-                if (cmdStart == -1 && GuildPrefix == -1 && UserPrefix == -1) await Task.CompletedTask;
-                string prefix = "";
-                string cmdString = "";
-                if (GuildPrefix > 0)
+                return(-1);
+            }
+            var GuildID = guild.Id;
+            var GuildFunction = await new GetGuildPrefix().GetPrefixAsync(GuildID);
+            var UserId = message.Author.Id;
+            var UserFunction = await new GetGuildPrefix().GetUserPrefix(UserId);
+            if(GuildFunction != null)
+            {
+                foreach(var prefix in GuildFunction)
                 {
-                    prefix = msg.Content.Substring(0, GuildPrefix);
-
-                    cmdString = msg.Content.Substring(GuildPrefix);
-                }
-               else if(UserPrefix > 0)
-                {
+                    var PrefixPlace = message.GetStringPrefixLength(prefix,StringComparison.OrdinalIgnoreCase);
+                    if (PrefixPlace != -1) return (PrefixPlace);
                     
-                    prefix = msg.Content.Substring(0, UserPrefix);
-                    cmdString = msg.Content.Substring(UserPrefix);
                 }
-                else
+            }
+            if (UserFunction != null)
+            {
+                foreach (var UserPrefix in UserFunction)
                 {
-                     prefix = msg.Content.Substring(0, cmdStart);
-                     cmdString = msg.Content.Substring(cmdStart);
+                    var PrefixPlace = message.GetStringPrefixLength(UserPrefix, StringComparison.OrdinalIgnoreCase);
+                    if (PrefixPlace != -1) return (PrefixPlace);
+
                 }
-                var command = cnext.FindCommand(cmdString, out var args);
-                if (command == null) await Task.CompletedTask;
-
-                var ctx = cnext.CreateContext(msg, prefix, command, args);
-               await Task.Run(async () => await cnext.ExecuteCommandAsync(ctx));
-
-            });
+            }
 
 
-               
 
-
-            return Task.CompletedTask;
+            return -1;
         }
-
-
-
-
-
-
-
 
 
 
@@ -532,6 +559,9 @@ namespace Discord_Bot
                     } else if (failedCheck is RequireNsfwAttribute)
                     {
                         await e.Context.RespondAsync("Not a nsfw channel");
+                    } else if(failedCheck is RequireCertainGuildAttribute)
+                    {
+                        await e.Context.RespondAsync("Usable within Certain Guild");
                     }
 
                 }

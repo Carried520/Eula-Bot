@@ -1,15 +1,12 @@
 ﻿using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
-using System;
-using System.Collections.Generic;
 using System.Net;
-using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Discord_Bot.Services
 {
-   public class DiscordService
+    public class DiscordService
     {
 
         public async Task SendMessage(CommandContext ctx , string message)

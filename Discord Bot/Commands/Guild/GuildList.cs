@@ -4,8 +4,6 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using MongoDB.Bson;
 using MongoDB.Driver;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -26,12 +24,13 @@ namespace Discord_Bot.Commands.Guild
         [Command("guildlist")]
         [Description("list of guild members")]
         [Category("guild")]
+        [RequireCertainGuild(875583069678092329L)]
 
         public async Task ListCommand(CommandContext ctx)
         {
-            if (!(ctx.Guild.Id == 875583069678092329)) return;
-            bool isOfficer = ctx.Member.Roles.Any(x => x.Id == 875592076002230323);
-            if (!isOfficer || !(ctx.Channel.Id == 875583602610552833)) return;
+            
+            bool isOfficer = ctx.Member.Roles.Any(x => x.Id == 875592076002230323UL);
+            if (!isOfficer || !(ctx.Channel.Id == 875583602610552833UL)) return;
             var client = new MongoClient(Config.Get("uri"));
             var database = client.GetDatabase("myFirstDatabase");
             var collection = database.GetCollection<GuildData>("guild-payouts");

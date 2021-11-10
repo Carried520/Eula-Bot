@@ -2,11 +2,7 @@
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Lavalink;
-using DSharpPlus.VoiceNext;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Discord_Bot.Commands
@@ -18,7 +14,12 @@ namespace Discord_Bot.Commands
         [Category("music")]
         public async Task ResumeCommand(CommandContext ctx)
         {
-
+            if (ctx.Member.VoiceState == null || ctx.Member.VoiceState.Channel == null)
+            {
+                await ctx.RespondAsync("You are not in a voice channel.");
+                return;
+            } 
+            
 
             var lava = ctx.Client.GetLavalink();
             var node = lava.ConnectedNodes.Values.First();
@@ -29,11 +30,11 @@ namespace Discord_Bot.Commands
                 await ctx.RespondAsync("Lavalink is not connected.");
                 return;
             }
-
-
-            
-
-            
+            if (conn.CurrentState.CurrentTrack == null)
+            {
+                await ctx.RespondAsync("There is no track playing");
+                return;
+            }
           await conn.ResumeAsync();
             
         

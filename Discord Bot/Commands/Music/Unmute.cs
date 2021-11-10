@@ -2,9 +2,6 @@
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Discord_Bot.Commands
@@ -18,7 +15,11 @@ namespace Discord_Bot.Commands
 
         public async Task UnmuteCommand(CommandContext ctx, DiscordMember member)
         {
-
+            if (member.VoiceState == null || member.VoiceState.Channel == null)
+            {
+                await ctx.RespondAsync("You are not in a voice channel.");
+                return;
+            }
             await member.SetMuteAsync(false);
             await ctx.Channel.SendMessageAsync($"Unmuted {member.Mention}");
 
