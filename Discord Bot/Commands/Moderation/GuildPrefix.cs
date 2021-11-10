@@ -57,6 +57,7 @@ namespace Discord_Bot.Commands.BotInfo
                 if (PreviousList.Count > 10)
                 {
                     await ctx.RespondAsync("You can only have 10  user prefixes");
+                    return;
                 }
                 var updated = Builders<UserPrefix>.Update.Set("Prefixes", PreviousList);
                 await UserCollection.UpdateOneAsync(Userfilter,updated);
@@ -99,6 +100,7 @@ namespace Discord_Bot.Commands.BotInfo
                 if (PreviousList.Count > 10)
                 {
                     await ctx.RespondAsync("You can only have 10  guild prefixes");
+                    return;
                 }
                 var updated = Builders<GuildPrefix>.Update.Set("Prefixes", PreviousList);
                 await UserCollection.UpdateOneAsync(Userfilter, updated);
