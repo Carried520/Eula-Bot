@@ -364,6 +364,4 @@ FodyWeavers.xsd
 
 *.jar
 .env
-*.json
-*.yml
-*.json
+appsettings.json
