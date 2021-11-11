@@ -4,6 +4,7 @@ using DSharpPlus.CommandsNext.Converters;
 using DSharpPlus.CommandsNext.Entities;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -60,24 +61,40 @@ namespace Discord_Bot.Utils
         public override BaseHelpFormatter WithCommand(Command command)
         {
             var sb = new StringBuilder();
-            sb.Append("You can use one of following options:").Append(" ").Append("\n");
+            sb.Append("How to use :").Append(" ").Append("\n");
 
             var result = command.Overloads;
             
-           for(int i =0;i<result.Count;i++)
-            {
-                
-                 sb.Append($"{i+1} option:");
-                foreach (var overload in result[i].Arguments)
+                for (int i = 0; i<result.Count; i++)
                 {
-                   if(overload == null) sb.Append(" ").Append($"No optional arguments").Append(" ");
-                   
-                   else sb.Append(" ").Append($"{overload.Name}").Append(" ").Append($"<{ overload.Description}>").Append(" ");
+                    
+                    sb.Append($"{i+1} :").Append(" ").Append($"e!{command.Name}");
+                    if (result[i].Arguments.Any())
+                    {
+                        foreach (var overload in result[i].Arguments)
+                        {
+
+
+
+                           
+
+                            sb.Append(" ").Append($"{overload.Name}").Append(" ").Append($"<{ overload.Description}>").Append(" ");
+
+
+                        }
+                    }
+                    else
+                    {
+                        sb.Append(" ").Append($"e!{command.Name}").Append("");
+                    }
+                    
+                    sb.Append("\n");
+
+
                 }
-                sb.Append("\n");
-                
-                
-            }
+            
+            
+           
 
 
             var toString = sb.ToString();
@@ -87,6 +104,8 @@ namespace Discord_Bot.Utils
                 _embed.AddField(command.Name, "no arguments").WithColor(DiscordColor.SpringGreen);
             }
             else _embed.AddField(command.Name, toString).WithColor(DiscordColor.SpringGreen);
+            _embed.AddField("Description",command.Description);
+           
 
 
 

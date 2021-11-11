@@ -1,2 +1,1 @@
-﻿Added Feature where u can set 10 user prefixes and 10 guild prefixes
-Improved Command Execution Speed
+﻿Added topgg stats updater

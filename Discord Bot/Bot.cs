@@ -28,7 +28,7 @@ namespace Discord_Bot
             {
                 Token = token,
                 TokenType = TokenType.Bot,
-                Intents = DiscordIntents.AllUnprivileged,
+                Intents = DiscordIntents.All,
                 MinimumLogLevel = LogLevel.Debug
 
             });

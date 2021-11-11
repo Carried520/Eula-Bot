@@ -27,6 +27,7 @@ using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -58,6 +59,7 @@ namespace Discord_Bot
         private static Timer _timer;
         private static Timer _BossTimer;
         private static Timer _presence;
+        private static Timer _TopGGTimer;
 
 
 
@@ -77,7 +79,8 @@ namespace Discord_Bot
             var services = new ServiceCollection()
                .AddSingleton<Random>()
                .AddSingleton<DiscordService>()
-               .AddSingleton<DatabaseService>()
+               .AddScoped<DatabaseService>()
+               .AddSingleton<MusicService>()
                .BuildServiceProvider();
 
 
@@ -88,12 +91,14 @@ namespace Discord_Bot
                 UseDefaultCommandHandler = true,
                 PrefixResolver = ResolvePrefix,
                 EnableMentionPrefix = false
-            }) ; 
+            }) ;
 
 
-
+            
+            
             foreach (var cmd in Commands.Values)
             {
+                
                 cmd.RegisterCommands<RandomCommand>();
                 cmd.RegisterCommands<Fox>();
                 cmd.RegisterCommands<Clear>();
@@ -139,6 +144,10 @@ namespace Discord_Bot
                 cmd.RegisterCommands<Changelog>();
                 cmd.RegisterCommands<RpCommands>();
                 cmd.RegisterCommands<Player>();
+                cmd.RegisterCommands<Vell>();
+                cmd.RegisterCommands<SavePlaylist>();
+                cmd.RegisterCommands<DeletePlaylist>();
+               
                 cmd.SetHelpFormatter<CustomHelpFormatter>();
                 
 
@@ -161,7 +170,7 @@ namespace Discord_Bot
                 SlashCommand.RegisterCommands<TimerSlash>();
                 SlashCommand.RegisterCommands<Rp>();
                 SlashCommand.RegisterCommands<Pets>();
-               SlashCommand.RegisterCommands<Faq>();
+                SlashCommand.RegisterCommands<Faq>();
                 SlashCommand.RegisterCommands<JoinSlash>();
                 SlashCommand.RegisterCommands<SlashPlay>();
                 SlashCommand.RegisterCommands<SlashPlayer>();
@@ -181,6 +190,7 @@ namespace Discord_Bot
             bot.GuildMemberAdded += OnGuildMemberJoin;
             bot.GuildDownloadCompleted += OnGuildDownload;
             bot.ComponentInteractionCreated += Play.OnClick;
+            bot.MessageCreated += OnMessageCreated;
 
 
 
@@ -243,12 +253,45 @@ namespace Discord_Bot
             });
 
 
+            _ = Task.Run(async () =>
+            {
+                _TopGGTimer = new Timer(async _ => {
 
 
-            await Task.CompletedTask;
+                    var guilds = 0;
+                    foreach (var client in bot.ShardClients)
+                    {
+                        guilds += client.Value.Guilds.Count;
+                         
+
+
+                    }
+
+
+                    await new TopGG().Update(guilds,bot.ShardClients.Count);
+                
+                },null,TimeSpan.FromSeconds(1),TimeSpan.FromHours(1));
+                await Task.Delay(-1);
+            
+            });
+
+
+
+
+
+                await Task.CompletedTask;
 
         }
 
+
+
+        public static Task OnMessageCreated(DiscordClient bot, MessageCreateEventArgs e)
+        {
+            _ = Task.Run(() => {
+                
+            });
+            return Task.CompletedTask;
+        }
         public static Task OnSlashErrored(SlashCommandsExtension extension, SlashCommandErrorEventArgs e)
         {
             _ = Task.Run(async () =>
@@ -280,7 +323,7 @@ namespace Discord_Bot
               
                 if (e.Guild.Id == 875583069678092329UL)
                 {
-                    Console.WriteLine(e.Guild.Id);
+                    
                     var role =  e.Guild.GetRole(875592272647946282UL);
                      var member = await e.Guild.GetMemberAsync(e.Member.Id);
                     await member.GrantRoleAsync(role);
@@ -299,10 +342,7 @@ namespace Discord_Bot
                 _timer = new Timer(async _ =>
                 {
 
-                    
-
-                   
-
+       
 
                     var today = DateTime.Now;
 
@@ -516,7 +556,7 @@ namespace Discord_Bot
                 foreach (var UserPrefix in UserFunction)
                 {
                     var PrefixPlace = message.GetStringPrefixLength(UserPrefix, StringComparison.OrdinalIgnoreCase);
-                    if (PrefixPlace != -1) return (PrefixPlace);
+                    if (PrefixPlace != -1) return PrefixPlace;
 
                 }
             }
@@ -525,6 +565,8 @@ namespace Discord_Bot
 
             return -1;
         }
+
+        
 
 
 
@@ -559,9 +601,22 @@ namespace Discord_Bot
                     } else if (failedCheck is RequireNsfwAttribute)
                     {
                         await e.Context.RespondAsync("Not a nsfw channel");
-                    } else if(failedCheck is RequireCertainGuildAttribute)
+                    } else if(failedCheck is RequireCertainGuildAttribute guild)
                     {
-                        await e.Context.RespondAsync("Usable within Certain Guild");
+                        var guildName = await e.Context.Client.GetGuildAsync(guild.GuildId);
+                        await e.Context.RespondAsync($"Usable within {guildName.Name}  Server");
+                    } else if(failedCheck is RequireRoleId roleId)
+                    {
+                        if(e.Context.Guild.Id != roleId.GuildId)
+                        {
+                            var guildName =  await e.Context.Client.GetGuildAsync(roleId.GuildId);
+                            await e.Context.RespondAsync($" Only usable in {guildName.Name} Server");
+                        }
+                        else 
+                        {
+                            await e.Context.RespondAsync($"{e.Context.Guild.GetRole(roleId.RoleId).Name} role required");
+                        }
+                        
                     }
 
                 }
@@ -581,21 +636,36 @@ namespace Discord_Bot
 
 
                 var sb = new StringBuilder();
-            var attr =   (CooldownAttribute ) e.Command.CustomAttributes.FirstOrDefault(x => x is CooldownAttribute);
                
              
 
-                sb.Append("You can use one of following options:").Append(" ").Append("\n");
+                sb.Append("How to use :").Append(" ").Append("\n");
 
                 var result = e.Command.Overloads;
 
-                for (int i = 0; i < result.Count; i++)
+                for (int i = 0; i<result.Count; i++)
                 {
-                    sb.Append($"{i + 1} option:");
-                    foreach (var overload in result[i].Arguments)
+
+                    sb.Append($"{i+1} :").Append(" ").Append($"e!{e.Command.Name}");
+                    if (result[i].Arguments.Any())
                     {
-                        sb.Append(" ").Append($"{overload.Name}").Append(" ").Append($"<{ overload.Description}>").Append(" ");
+                        foreach (var overload in result[i].Arguments)
+                        {
+
+
+
+
+
+                            sb.Append(" ").Append($"{overload.Name}").Append(" ").Append($"<{ overload.Description}>").Append(" ");
+
+
+                        }
                     }
+                    else
+                    {
+                        sb.Append(" ").Append($"e!{e.Command.Name}").Append("");
+                    }
+
                     sb.Append("\n");
 
 

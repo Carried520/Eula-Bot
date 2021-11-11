@@ -22,15 +22,15 @@ namespace Discord_Bot.Commands.Guild
         [Command("resetone")]
         [Description("reset one document")]
         [Category("guild")]
-        [RequireCertainGuild(875583069678092329UL)]
+        [RequireRoleId(875592076002230323UL, 875583069678092329UL)]
 
 
         public async Task Reset(CommandContext ctx, string Family)
         {
             
-            bool isOfficer = ctx.Member.Roles.Any(x => x.Id == 875592076002230323UL);
-            if (!isOfficer || !(ctx.Channel.Id == 875583602610552833UL)) return;
-            var client = new MongoClient(Config.Get("uri"));
+           
+            if (!(ctx.Channel.Id == 875583602610552833UL)) return;
+            var client = new MongoClient(Config.Get("second_uri"));
             var database = client.GetDatabase("myFirstDatabase");
             var collection = database.GetCollection<GuildData>("guild-payouts");
             var filter = Builders<GuildData>.Filter.Eq("Family", Family);

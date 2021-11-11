@@ -1,4 +1,5 @@
 ﻿using Discord_Bot.Attributes;
+using Discord_Bot.Services;
 using Discord_Bot.Utils;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
@@ -18,7 +19,7 @@ namespace Discord_Bot.Commands.Music
 {
     class Queue : BaseCommandModule
     {
-        public static Dictionary<ulong, List<LavalinkTrack>> music = PlayScheduler.music;
+        public MusicService MusicService{ private get; set; }
         [Command("queue")]
         [Description("Shows queue")]
         [Category("music")]
@@ -27,6 +28,7 @@ namespace Discord_Bot.Commands.Music
         {
             try
             {
+                var music = MusicService.music;
                 var interact = ctx.Client.GetInteractivity();
                 StringBuilder sb = new StringBuilder();
                 StringBuilder GetAuthor = new StringBuilder();

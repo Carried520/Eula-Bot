@@ -11,6 +11,7 @@ namespace Discord_Bot.Commands.Guild
         [Description("Use this to get boss role")]
         [Category("guild")]
         [RequireCertainGuild(875583069678092329UL)]
+        
 
 
 
