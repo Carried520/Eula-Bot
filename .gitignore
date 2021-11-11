@@ -365,3 +365,5 @@ FodyWeavers.xsd
 Lavalink.jar
 
 .env
+
+appsettings.json

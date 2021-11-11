@@ -1,4 +1,5 @@
 ﻿using MongoDB.Driver;
+using System;
 
 namespace Discord_Bot.Services
 {
@@ -10,5 +11,12 @@ namespace Discord_Bot.Services
             return mongo;
 
         }
+        public IMongoDatabase GetDatabase(string DatabaseName)
+        {
+            var client = Mongo();
+            var database = client.GetDatabase(DatabaseName);
+            return database;
+        }
+        
     }
 }

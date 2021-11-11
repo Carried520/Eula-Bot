@@ -413,9 +413,6 @@ namespace Discord_Bot
 
                                 }
 
-
-
-
                             }
 
                         });
@@ -482,27 +479,11 @@ namespace Discord_Bot
                     await Task.CompletedTask;
 
                 });
-
-
-               
-
-
-
-
-
-
-
-
-
-
             });
 
 
             return Task.CompletedTask;
         }
-
-
-        
 
 
         public static Task OnVoiceUpdated(LavalinkGuildConnection guildConnection, PlayerUpdateEventArgs e)
@@ -525,11 +506,6 @@ namespace Discord_Bot
 
 
 
-
-
-
-
-
         private static async Task<int> ResolvePrefix(DiscordMessage message)
         {
             if (message.Channel.Type == ChannelType.Private) await Task.FromResult(0);
@@ -544,6 +520,10 @@ namespace Discord_Bot
             var UserFunction = await new GetGuildPrefix().GetUserPrefix(UserId);
             if(GuildFunction != null)
             {
+
+
+             //var prefix = message.GetStringPrefixLength(GuildFunction.FirstOrDefault(x => message.GetStringPrefixLength(x, StringComparison.OrdinalIgnoreCase) != -1),StringComparison.OrdinalIgnoreCase);
+                
                 foreach(var prefix in GuildFunction)
                 {
                     var PrefixPlace = message.GetStringPrefixLength(prefix,StringComparison.OrdinalIgnoreCase);
@@ -553,6 +533,7 @@ namespace Discord_Bot
             }
             if (UserFunction != null)
             {
+               // var guildPrefix = message.GetStringPrefixLength(UserFunction.FirstOrDefault(x => message.GetStringPrefixLength(x, StringComparison.OrdinalIgnoreCase) != -1), StringComparison.OrdinalIgnoreCase);
                 foreach (var UserPrefix in UserFunction)
                 {
                     var PrefixPlace = message.GetStringPrefixLength(UserPrefix, StringComparison.OrdinalIgnoreCase);
@@ -560,8 +541,6 @@ namespace Discord_Bot
 
                 }
             }
-
-
 
             return -1;
         }
