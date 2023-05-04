@@ -1,2 +1,2 @@
 # Eula-Bot
-First C# bot to have music player with buttons!
+Don't ever replicate this bot. Example of bad code by me.
